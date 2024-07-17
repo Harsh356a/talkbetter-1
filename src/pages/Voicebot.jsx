@@ -17,7 +17,9 @@ const SpeechToText = ({ data }) => {
     socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: data, isVoiceNeeded: true },
     });
-
+    socket.on('getToken', async (token) => {
+      console.log(token);
+    })
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });

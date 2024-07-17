@@ -15,7 +15,9 @@ const Chatbot = ({ data }) => {
     });
     console.log(newSocket);
     setSocket(newSocket);
-
+    socket.on('getToken', async (token) => {
+      console.log(token);
+    })
     newSocket.on("audio-chunk", (message) => {
       console.log(message);
       setMessages((prevMessages) => [
