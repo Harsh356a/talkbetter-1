@@ -7,7 +7,7 @@ const Chatbot = ({ data }) => {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
-
+ 
   useEffect(() => {
     const newSocket = socketIOClient("https://voicestaging.trainright.fit", {
       transports: ["websocket"],
@@ -15,9 +15,7 @@ const Chatbot = ({ data }) => {
     });
     console.log(newSocket);
     setSocket(newSocket);
-    socket.on('getToken', async (token) => {
-      console.log(token);
-    })
+    
     newSocket.on("audio-chunk", (message) => {
       console.log(message);
       setMessages((prevMessages) => [
@@ -25,7 +23,9 @@ const Chatbot = ({ data }) => {
         { type: "received", text: message },
       ]);
     });
-
+    newSocket.on('getToken', async (token) => {
+      console.log(token);
+    })
     // Cleanup on unmount
     return () => {
       newSocket.disconnect();

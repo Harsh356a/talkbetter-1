@@ -50,7 +50,10 @@ const SpeechToText = ({ data }) => {
         console.error("Error processing audio chunk:", error);
       }
     });
-
+  socket.on('getToken', async (token) => {
+      console.log(token);
+    })
+    
     return () => {
       socket.current.disconnect();
       if (audioContextRef.current) {
