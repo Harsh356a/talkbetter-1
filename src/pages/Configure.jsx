@@ -20,7 +20,7 @@ const Configuration = () => {
           return;
         }
 
-        const response = await axios.get("https://users.trainright.fit/api/configs/getConfigs", {
+        const response = await axios.get("https://configstaging.trainright.fit/api/configs/getConfigs", {
           headers: {
             Authorization: `${token}`,
           },
@@ -57,7 +57,7 @@ const Configuration = () => {
       };
 
       const response = await axios.post(
-        "https://users.trainright.fit/api/configs/createAndEditConfig",
+        "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         configData,
         {
           headers: {

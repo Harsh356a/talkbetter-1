@@ -23,7 +23,7 @@ const Api = ({ open }) => {
     const fetchData = async () => {
       try {
         let a = await axios.get(
-          "https://users.trainright.fit/api/callLog/getCallLogs"
+          "https://configstaging.trainright.fit/api/callLog/getCallLogs"
         );
         console.log(a.data);
         setResponse(a.data);

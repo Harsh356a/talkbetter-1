@@ -25,7 +25,7 @@ const Configuration1 = ({ onClose, initialConfig }) => {
     try {
       console;
       const response = await axios.post(
-        "https://users.trainright.fit/api/configs/createAndEditConfig",
+        "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         { ...config, id: config._id }, // Include the ID in the request body
         {
           headers: {

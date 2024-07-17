@@ -116,7 +116,7 @@ const Configuration = () => {
         }
 
         const response = await axios.get(
-          `https://users.trainright.fit/api/configs/findOneAssistantById?id=${idx.id}`,
+          `https://configstaging.trainright.fit/api/configs/findOneAssistantById?id=${idx.id}`,
           {
             headers: {
               Authorization: `${token}`,

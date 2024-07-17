@@ -38,7 +38,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "https://users.trainright.fit/api/users/signUp",
+        "https://configstaging.trainright.fit/api/users/signUp",
         formData
       );
       console.log(response.data);

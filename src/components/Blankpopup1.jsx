@@ -20,7 +20,7 @@ const BlankTemplatePopup1 = ({ assistant, onClose }) => {
           return;
         }
         const response = await axios.get(
-          "https://users.trainright.fit/api/configs/getConfigs",
+          "https://configstaging.trainright.fit/api/configs/getConfigs",
           {
             headers: {
               Authorization: `${token}`,
@@ -44,7 +44,7 @@ const BlankTemplatePopup1 = ({ assistant, onClose }) => {
     }
 
     try {
-      const apiEndpoint = "https://users.trainright.fit/api/configs/createAssistant";
+      const apiEndpoint = "https://configstaging.trainright.fit/api/configs/createAssistant";
 
       const requestBody = {
         name: name,

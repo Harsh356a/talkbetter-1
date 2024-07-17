@@ -76,7 +76,7 @@ const TemplateSelection = ({ open }) => {
           return;
         }
         const response = await axios.get(
-          "https://users.trainright.fit/api/configs/getConfigs",
+          "https://configstaging.trainright.fit/api/configs/getConfigs",
           {
             headers: {
               Authorization: `${token}`,
@@ -102,7 +102,7 @@ const TemplateSelection = ({ open }) => {
 
     try {
       const response = await axios.post(
-        "https://users.trainright.fit/api/configs/createAssistant",
+        "https://configstaging.trainright.fit/api/configs/createAssistant",
         {
           name: name,
           instructions: "Hello i am blank assistant",

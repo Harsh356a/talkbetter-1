@@ -38,7 +38,7 @@ const SaveCallPopup = ({ onClose }) => {
 
     try {
       await axios.post(
-        "https://users.trainright.fit/api/callLog/saveCallLog",
+        "https://configstaging.trainright.fit/api/callLog/saveCallLog",
         formData
       );
       console.log("Data posted successfully");

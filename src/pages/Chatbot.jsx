@@ -9,7 +9,7 @@ const Chatbot = ({ data }) => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = socketIOClient("https://voicebots.trainright.fit", {
+    const newSocket = socketIOClient("https://voicestaging.trainright.fit", {
       transports: ["websocket"],
       query: { apiKey: data, isVoiceNeeded: false },
     });

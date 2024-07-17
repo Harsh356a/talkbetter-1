@@ -20,7 +20,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://users.trainright.fit/api/users/login",
+        "https://configstaging.trainright.fit/api/users/login",
         {
           email,
           password,
@@ -45,7 +45,7 @@ const Login = () => {
     try {
       const { credential } = response;
       const googleResponse = await axios.post(
-        "https://users.trainright.fit/api/users/google-login",
+        "https://configstaging.trainright.fit/api/users/google-login",
         {
           token: credential,
           projectId: "664ece853e17537b70918cde",

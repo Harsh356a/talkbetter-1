@@ -36,7 +36,7 @@ const FormPopup = ({ onClose, onSubmit }) => {
       formDataToSend.append("audioFile", formData.audioFile);
 
       const response = await axios.post(
-        "https://users.trainright.fit/api/voice/saveAudio",
+        "https://configstaging.trainright.fit/api/voice/saveAudio",
         formDataToSend,
         {
           headers: {
@@ -133,7 +133,7 @@ const Call = ({ open }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://users.trainright.fit/api/voice/getAllAudio"
+          "https://configstaging.trainright.fit/api/voice/getAllAudio"
         );
         console.log("voices", response.data.voices);
         setResponse(response.data.voices);

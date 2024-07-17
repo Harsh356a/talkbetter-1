@@ -14,7 +14,7 @@ const SpeechToText = ({ data }) => {
   const sourceNodeRef = useRef(null);
 
   useEffect(() => {
-    socket.current = io("https://voicebots.trainright.fit", {
+    socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: data, isVoiceNeeded: true },
     });
 

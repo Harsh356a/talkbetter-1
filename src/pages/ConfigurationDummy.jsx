@@ -243,7 +243,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       }
 
       const apiEndpoint =
-        "https://users.trainright.fit/api/configs/createAssistant";
+        "https://configstaging.trainright.fit/api/configs/createAssistant";
       const requestBody = {
         name: name,
         instructions: systemPrompt,
@@ -262,7 +262,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
       // Second API call
       const response1 = await axios.post(
-        "https://users.trainright.fit/api/configs/createAndEditConfig",
+        "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         {
           fillers: ["Great"],
           firstFiller: firstFillers,
@@ -313,7 +313,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         }
 
         const response = await axios.get(
-          `https://users.trainright.fit/api/configs/findOneAssistantById?id=${idx.id}`,
+          `https://configstaging.trainright.fit/api/configs/findOneAssistantById?id=${idx.id}`,
           {
             headers: {
               Authorization: `${token}`,
@@ -344,7 +344,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         }
 
         const response = await axios.get(
-          "https://users.trainright.fit/api/configs/getConfigs",
+          "https://configstaging.trainright.fit/api/configs/getConfigs",
           {
             headers: {
               Authorization: `${token}`,

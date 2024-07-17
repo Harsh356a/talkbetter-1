@@ -12,7 +12,7 @@ const Documents = ({ open }) => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(
-        `https://users.trainright.fit/api/doc/deleteDoc/${id}`
+        `https://configstaging.trainright.fit/api/doc/deleteDoc/${id}`
       );
       // Remove the deleted document from the state
       setDocuments(documents.filter((doc) => doc._id !== id));
@@ -25,7 +25,7 @@ const Documents = ({ open }) => {
     const fetchDocuments = async () => {
       try {
         const response = await fetch(
-          "https://users.trainright.fit/api/doc/getAllDocList"
+          "https://configstaging.trainright.fit/api/doc/getAllDocList"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -74,7 +74,7 @@ const Documents = ({ open }) => {
     try {
       console.log( { document: { ...selectedFileInfo }, userId: "harsh" })
       const response = await axios.post(
-        "https://users.trainright.fit/api/doc/uploadDoc",
+        "https://configstaging.trainright.fit/api/doc/uploadDoc",
         { document: { ...selectedFileInfo }, userId: "harsh" },
         {
           headers: {
