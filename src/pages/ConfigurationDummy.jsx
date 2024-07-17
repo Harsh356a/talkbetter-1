@@ -248,7 +248,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         name: name,
         instructions: systemPrompt,
         configId: configid,
-        twilioNumber: "+12176730597",
+        twilioNumber: "+18288880659",
         id: idx.id,
       };
 

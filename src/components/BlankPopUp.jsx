@@ -107,7 +107,7 @@ const TemplateSelection = ({ open }) => {
           name: name,
           instructions: "Hello i am blank assistant",
           configId: "667bcdb873871446c339a734",
-          twilioNumber: "+12176730597",
+          twilioNumber: "+18288880659",
         },
         {
           headers: {
