@@ -66,7 +66,7 @@ const Login = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+    <GoogleOAuthProvider clientId="126939604567-fb0s64i0qssep1g10g9qma9e4sek8iqv.apps.googleusercontent.com">
       <div className="bg-black text-white min-h-screen flex items-center justify-center w-full absolute px-4 md:px-0">
         <div className="absolute top-20 ">
           <h1 className="text-2xl md:text-3xl font-semibold text-center ">
@@ -156,6 +156,7 @@ const Login = () => {
               onSuccess={handleGoogleLoginSuccess}
               onError={() => {
                 console.error("Login Failed");
+                setError("Google login failed. Please try again.");
               }}
             />
           </div>
