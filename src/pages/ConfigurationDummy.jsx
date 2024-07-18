@@ -5,8 +5,9 @@ import { io } from "socket.io-client";
 import { useNavigate, useParams } from "react-router-dom";
 import Chatbot from "./Chatbot";
 import { FaRegCopy } from "react-icons/fa";
-import Select from 'react-select';
-
+import Select from "react-select";
+import ReactTagInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
 import { voiceData } from "../assets/data/playhtdata";
 const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [apikey, setApiKey] = useState("");
@@ -158,7 +159,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
     recognition.onresult = (event) => {
       const transcript = Array.from(event.results)
-        .map(result => result[0].transcript)
+        .map((result) => result[0].transcript)
         .join(" ");
       setText(transcript);
       console.log("Speech recognition result:", transcript);
@@ -192,6 +193,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [configid, setConfigId] = useState("");
   const [activeContent, setActiveContent] = useState("content1");
   const [firstFillers, setFirstFillers] = useState("");
+  const [fillers, setFillers] = useState([]);
   const [voiceID, setVoiceID] = useState("");
   const [audioSpeed, setAudioSpeed] = useState("");
   const [isCopied, setIsCopied] = useState(false);
@@ -232,8 +234,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   };
   const options = voiceData.map((voice) => ({
     value: voice.id,
-    label: voice.name
+    label: voice.name,
   }));
+  const handleTagChange = (newTags) => {
+    setFillers(newTags);
+  };
   const handlePost = async () => {
     try {
       const token = localStorage.getItem("Token");
@@ -264,7 +269,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       const response1 = await axios.post(
         "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         {
-          fillers: ["Great"],
+          fillers: fillers,
           firstFiller: firstFillers,
           audioSpeed: audioSpeed,
           voiceId: voiceID,
@@ -280,6 +285,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
       // Update local state after successful updates
       setFirstFillers(response1.data.firstFiller);
+      setFillers(response1.data.fillers);
       setVoiceID(response1.data.voiceId);
       setAudioSpeed(response1.data.audioSpeed);
       alert("Updated");
@@ -296,6 +302,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     if (a.length > 0) {
       // console.log(a[0])
       setFirstFillers(a[0].firstFiller);
+      setFillers(a[0].fillers);
       setVoiceID(a[0].voiceId);
       setAudioSpeed(a[0].audioSpeed.$numberDecimal);
       // setApiKey(a[0].audioSpeed.$numberDecimal);
@@ -395,33 +402,32 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                 <div>
                   {show ? <Chatbot data={apikey} /> : ""}
                   <div>
-      <div>
-        {isCalling && endCall ? (
-          <>
-            <button
-              onClick={handleSpeech}
-              className="top-0 bg-red-800 text-white font-bold py-2 px-4 rounded inline-flex items-center"
-            >
-              End Call
-            </button>
-            <button
-              onClick={handleMute}
-              className="top-0 bg-gray-800 text-white font-bold py-2 px-4 rounded inline-flex items-center"
-            >
-              {isMuted ? "Unmute" : "Mute"}
-            </button>
-          </>
-        ) : (
-          <button
-            onClick={handleSpeech}
-            className="bg-[#5D5FEF] text-white font-bold py-2 px-4 rounded inline-flex items-center"
-          >
-            Talk with {name}
-          </button>
-        )}
-      </div>
-      
-      </div>
+                    <div>
+                      {isCalling && endCall ? (
+                        <>
+                          <button
+                            onClick={handleSpeech}
+                            className="top-0 bg-red-800 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+                          >
+                            End Call
+                          </button>
+                          <button
+                            onClick={handleMute}
+                            className="top-0 bg-gray-800 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+                          >
+                            {isMuted ? "Unmute" : "Mute"}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={handleSpeech}
+                          className="bg-[#5D5FEF] text-white font-bold py-2 px-4 rounded inline-flex items-center"
+                        >
+                          Talk with {name}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div to={"/chatbots"}>
@@ -745,13 +751,24 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">
-                    First Message
+                    First Filler
                   </label>
                   <input
                     className="p-3 w-full bg-zinc-900 rounded"
                     value={firstFillers && firstFillers}
                     onChange={(e) => setFirstFillers(e.target.value)}
                   />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Fillers
+                  </label>
+                  <ReactTagInput
+                  tags={fillers}
+                  placeholder="Add fillers"
+                  onChange={handleTagChange}
+                  sty
+                />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -896,43 +913,47 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                     </p>
                   </label>
                   {showDropdown ? (
-  <Select
-    options={options}
-    onChange={(selectedOption) => setVoiceID(selectedOption.value)}
-    className="w-full py-1 bg-[#1F1B29] rounded"
-    styles={{
-      control: (base) => ({
-        ...base,
-        backgroundColor: '#1F1B29',
-        border: 'none',
-        boxShadow: 'none',
-        '&:hover': {
-          border: 'none'
-        }
-      }),
-      menu: (base) => ({
-        ...base,
-        backgroundColor: '#1F1B29'
-      }),
-      singleValue: (base) => ({
-        ...base,
-        color: 'white'
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isFocused ? '#3E2F5B' : '#1F1B29',
-        color: 'white'
-      })
-    }}
-  />
-) : (
-  <input
-    type="text"
-    value={voiceID}
-    onChange={(e) => setVoiceID(e.target.value)}
-    className="w-full p-2.5 bg-[#1F1B29] rounded"
-  />
-)}
+                    <Select
+                      options={options}
+                      onChange={(selectedOption) =>
+                        setVoiceID(selectedOption.value)
+                      }
+                      className="w-full py-1 bg-[#1F1B29] rounded"
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          backgroundColor: "#1F1B29",
+                          border: "none",
+                          boxShadow: "none",
+                          "&:hover": {
+                            border: "none",
+                          },
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          backgroundColor: "#1F1B29",
+                        }),
+                        singleValue: (base) => ({
+                          ...base,
+                          color: "white",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          backgroundColor: state.isFocused
+                            ? "#3E2F5B"
+                            : "#1F1B29",
+                          color: "white",
+                        }),
+                      }}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={voiceID}
+                      onChange={(e) => setVoiceID(e.target.value)}
+                      className="w-full p-2.5 bg-[#1F1B29] rounded"
+                    />
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
