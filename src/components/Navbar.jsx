@@ -22,6 +22,7 @@ import "./Navbar.css";
 import Profile from "./Profile";
 import Overview from "./Overview";
 import Squads from "./Squads";
+import Provider from "./ProviderApi";
 const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
@@ -108,14 +109,12 @@ const Sidebar = ({ openfun }) => {
                   )}
                 </button>
                 {response && dropdownOpen && (
-                  
-                    <button
-                      className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  
+                  <button
+                    className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
                 )}
               </div>
             </div>
@@ -128,13 +127,21 @@ const Sidebar = ({ openfun }) => {
                   setOpen(false), openfun(true);
                 }}
               >
-                  <div
+                <div
                   className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] sm:p-2 p-1 rounded transition-all ${
                     location.pathname === "/overview" ? "active-tab" : ""
                   }`}
                   onClick={() => navigate("/overview")}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="white"
+                    viewBox="0 0 256 256"
+                  >
+                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path>
+                  </svg>
                   <h1>Overview</h1>
                 </div>
                 <div
@@ -182,7 +189,15 @@ const Sidebar = ({ openfun }) => {
                   }`}
                   onClick={() => navigate("/squads")}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="white"
+                    viewBox="0 0 256 256"
+                  >
+                    <path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path>
+                  </svg>
                   <h1>Squads</h1>
                 </div>
                 <div
@@ -258,12 +273,20 @@ const Sidebar = ({ openfun }) => {
             >
               <div className="flex fixed flex-col bg-black h-[84vh] w-[72px] justify-between items-center mx-2 rounded-3xl pt-8 py-5 lg:bottom-12 transition-all top-[5rem] lg:top-[4.8rem] xxs:top-[7rem] sm:top-[5rem]">
                 <div className="flex flex-col gap-4 items-center">
-                    <div
+                  <div
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/overview" ? "active-tab" : ""
                     }`}
                   >
-                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="white"
+                      viewBox="0 0 256 256"
+                    >
+                      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path>
+                    </svg>
                   </div>
                   <div
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
@@ -291,7 +314,15 @@ const Sidebar = ({ openfun }) => {
                       location.pathname === "/squads" ? "active-tab" : ""
                     }`}
                   >
-                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="white"
+                      viewBox="0 0 256 256"
+                    >
+                      <path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path>
+                    </svg>
                   </div>
                   <div
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
@@ -364,12 +395,14 @@ const Sidebar = ({ openfun }) => {
         ) : location.pathname === "/profile" ? (
           <Profile open={open} />
         ) : location.pathname === "/overview" ? (
-          <Overview open={open} /> 
-        ): location.pathname === "/squads" ? (
+          <Overview open={open} />
+        ) : location.pathname === "/api" ? (
+          <Provider open={open} />
+        ) : location.pathname === "/squads" ? (
           <Squads open={open} />
-        ) :
-        
-        ""}
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
