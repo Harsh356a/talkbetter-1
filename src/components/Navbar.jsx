@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ApllePodCastLogo from "../images/ApplePodcastsLogo.png";
 import File from "../images/File.png";
@@ -22,21 +22,48 @@ import "./Navbar.css";
 import Profile from "./Profile";
 import Overview from "./Overview";
 import Squads from "./Squads";
+import Members from "../pages/Members";
+import Settings from "../pages/Settings";
 const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const popupRef = useRef(null);
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     const userDetails = JSON.parse(localStorage.getItem("UserDetails"));
     if (userDetails) {
+      setEmail(userDetails.email);
       setResponse(userDetails.name);
       setUserName(userDetails.name.slice(0, 1).toUpperCase());
     }
   });
+
+
+  const handleClickOutside = (event) => {
+    if (popupRef.current && !popupRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+      setIsPopupVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const togglePopup = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
+
+  console.log(email);
 
   const handleLogin = (userDetails) => {
     localStorage.setItem("UserDetails", JSON.stringify(userDetails));
@@ -108,14 +135,12 @@ const Sidebar = ({ openfun }) => {
                   )}
                 </button>
                 {response && dropdownOpen && (
-                  
-                    <button
-                      className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  
+                  <button
+                    className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
                 )}
               </div>
             </div>
@@ -128,13 +153,21 @@ const Sidebar = ({ openfun }) => {
                   setOpen(false), openfun(true);
                 }}
               >
-                  <div
+                <div
                   className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] sm:p-2 p-1 rounded transition-all ${
                     location.pathname === "/overview" ? "active-tab" : ""
                   }`}
                   onClick={() => navigate("/overview")}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="white"
+                    viewBox="0 0 256 256"
+                  >
+                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path>
+                  </svg>
                   <h1>Overview</h1>
                 </div>
                 <div
@@ -182,7 +215,15 @@ const Sidebar = ({ openfun }) => {
                   }`}
                   onClick={() => navigate("/squads")}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="white"
+                    viewBox="0 0 256 256"
+                  >
+                    <path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path>
+                  </svg>
                   <h1>Squads</h1>
                 </div>
                 <div
@@ -224,7 +265,9 @@ const Sidebar = ({ openfun }) => {
                   />
                   <h1>Provider APIs</h1>
                 </div>
+                
               </div>
+              
               <div
                 className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
                   location.pathname === "/profile" ? "active-tab" : ""
@@ -240,13 +283,65 @@ const Sidebar = ({ openfun }) => {
                 </svg>
                 <h1>Profile</h1>
               </div>
-              <div className="flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-1 rounded py-5 mx-6">
-                <img
-                  src={Headset}
-                  alt="Feedback"
-                  className="w-4 h-4 sm:w-10 sm:h-10"
-                />
-                <h1>Feedback</h1>
+              <div className="relative">
+                <button
+                  className="bg-zinc-900 hover:bg-zinc-800 text-white flex items-center p-2 rounded-lg space-x-2 max-w-lg"
+                  onClick={togglePopup}
+                  ref={buttonRef}
+                >
+                  <div className="flex items-center justify-center bg-teal-600 rounded-full w-8 h-8">
+                    <svg
+                      className="w-6 h-6 text-teal-200"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-5l4.5 2.5-4.5 2.5zm0-8L16 12 10 14.01v-5L10 8.5z" />
+                    </svg>
+                  </div>
+                  <span className="flex-grow truncate">{email}</span>
+                  <button className="flex items-center justify-center text-zinc-400"></button>
+                </button>
+
+                {isPopupVisible && (
+                  <div ref={popupRef} className="absolute md:-top-80 w-60  backdrop-filter backdrop-blur-lg text-white p-4 rounded-lg shadow-md  dark:text-white">
+                    <div className="flex items-center justify-between pb-3 border-b border-zinc-700 dark:border-zinc-700">
+                      <span className="font-semibold">{email}'s Org</span>
+                      <svg
+                        className="w-4 h-4 text-zinc-500 dark:text-zinc-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 18l6-6-6-6"></path>
+                      </svg>
+                    </div>
+                    <div className="pt-3">
+                      <p className="text-zinc-400 text-sm mb-3 dark:text-zinc-400">
+                        Actions
+                      </p>
+                      <ul className="space-y-2">
+                        <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                          <span>Billing</span>
+                        </li>
+                        <li onClick={() => navigate("/members") } className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                          <span>Members</span>
+                        </li>
+                        <li onClick={() => navigate("/settings") } className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                          <span>Settings</span>
+                        </li>
+                        <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                          <span>API Keys</span>
+                        </li>
+                        <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                          <span>Provider Credentials</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -258,12 +353,20 @@ const Sidebar = ({ openfun }) => {
             >
               <div className="flex fixed flex-col bg-black h-[84vh] w-[72px] justify-between items-center mx-2 rounded-3xl pt-8 py-5 lg:bottom-12 transition-all top-[5rem] lg:top-[4.8rem] xxs:top-[7rem] sm:top-[5rem]">
                 <div className="flex flex-col gap-4 items-center">
-                    <div
+                  <div
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/overview" ? "active-tab" : ""
                     }`}
                   >
-                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="white"
+                      viewBox="0 0 256 256"
+                    >
+                      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm71.87,53.27L136,114.14V40.37A88,88,0,0,1,199.87,77.27ZM120,40.37v83l-71.89,41.5A88,88,0,0,1,120,40.37ZM128,216a88,88,0,0,1-71.87-37.27L207.89,91.12A88,88,0,0,1,128,216Z"></path>
+                    </svg>
                   </div>
                   <div
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
@@ -291,7 +394,15 @@ const Sidebar = ({ openfun }) => {
                       location.pathname === "/squads" ? "active-tab" : ""
                     }`}
                   >
-                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="white" viewBox="0 0 256 256"><path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      fill="white"
+                      viewBox="0 0 256 256"
+                    >
+                      <path d="M116,128a12,12,0,1,1,12,12A12,12,0,0,1,116,128ZM84,140a12,12,0,1,0-12-12A12,12,0,0,0,84,140Zm88,0a12,12,0,1,0-12-12A12,12,0,0,0,172,140Zm60-76V192a16,16,0,0,1-16,16H83l-32.6,28.16-.09.07A15.89,15.89,0,0,1,40,240a16.13,16.13,0,0,1-6.8-1.52A15.85,15.85,0,0,1,24,224V64A16,16,0,0,1,40,48H216A16,16,0,0,1,232,64ZM40,224h0ZM216,64H40V224l34.77-30A8,8,0,0,1,80,192H216Z"></path>
+                    </svg>
                   </div>
                   <div
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
@@ -328,8 +439,14 @@ const Sidebar = ({ openfun }) => {
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                   </svg>
                 </div>
-                <div className="flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded">
-                  <img src={Headset} alt="Feedback" />
+                <div className="flex items-center justify-center bg-teal-600 rounded-full w-8 h-8">
+                  <svg
+                    className="w-6 h-6 text-teal-200"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-5l4.5 2.5-4.5 2.5zm0-8L16 12 10 14.01v-5L10 8.5z" />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -364,12 +481,18 @@ const Sidebar = ({ openfun }) => {
         ) : location.pathname === "/profile" ? (
           <Profile open={open} />
         ) : location.pathname === "/overview" ? (
-          <Overview open={open} /> 
-        ): location.pathname === "/squads" ? (
+          <Overview open={open} />
+        ) : location.pathname === "/squads" ? (
           <Squads open={open} />
+        ) :  location.pathname === "/members" ? (
+          <Members open={open} />
+        ) : location.pathname === "/settings" ? (
+          <Settings email={email} open={open} /> 
         ) :
         
-        ""}
+        (
+          ""
+        )}
       </div>
     </div>
   );

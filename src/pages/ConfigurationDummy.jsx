@@ -17,6 +17,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [endCall, setEndCall] = useState(true);
+  const [selectedModel, setSelectedModel] = useState('Anthropic');
 
   const recognitionRef = useRef(null);
   const socket = useRef(null);
@@ -37,6 +38,8 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
+
+   
 
     socket.current.on("audio-chunk", async (chunk) => {
       try {
@@ -201,7 +204,9 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const handleButtonClick = (contentId) => {
     setActiveContent(contentId);
   };
-
+  const handleChange = (event) => {
+    setSelectedModel(event.target.value);
+  };
   const handleOutsideClick = (e) => {
     if (chatRef.current && !chatRef.current.contains(e.target)) {
       setIsChatVisible(false);
@@ -269,6 +274,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
           audioSpeed: audioSpeed,
           voiceId: voiceID,
           id: configid,
+          aiModel: selectedModel,
         },
         {
           headers: {
@@ -781,8 +787,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   <label className="block text-sm font-medium mb-1">
                     Model
                   </label>
-                  <select className="w-full p-2 bg-[#1F1B29] rounded text-white">
-                    <option>GPT 3.5 Turbo Cluster</option>
+                  <select value={selectedModel} onChange={handleChange} className="w-full p-2 bg-[#1F1B29] rounded text-white">
+                    <option>Anthropic</option>
+                    <option>GPT 3.5</option>
+                    <option>GPT 4.0</option>
+                    <option>Claude</option>
                   </select>
                 </div>
                 <div className="mb-4">

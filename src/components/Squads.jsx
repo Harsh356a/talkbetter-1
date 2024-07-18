@@ -34,11 +34,11 @@ const Squads = ({ open }) => {
       } absolute flex-col gap-[24px] lg:top-[4.6rem] xl:top-[5rem] bg-black h-[85vh] rounded-3xl text-white flex justify-center items-center sm:top-[4.9rem] top-[6.9rem] overflow-hidden`}
     >
       <button
-        className="bg-zinc-700 mt-9 py-2 px-14 rounded-lg md:mr-[55rem]"
+        className="bg-[#131416] mt-9 py-2 px-14 rounded-lg md:mr-[55rem]"
         onClick={handleNewSquadClick}
       >
         <span className="mr-2">New Squad</span>
-        <span className="text-green-500">+</span>
+        <span className="text-zinc-200">+</span>
       </button>
       <div className="flex h-screen text-zinc-100">
         <div className="p-4"></div>
@@ -54,7 +54,7 @@ const Squads = ({ open }) => {
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
           onClick={handleClosePopup}
         >
-          <div className="max-w-sm w-full bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-md">
+          <div className="max-w-sm w-full bg-[#131416]  p-6 rounded-lg shadow-md">
             <div className="flex flex-col items-center">
               <div className="bg-teal-500 p-4 rounded-full mb-4">
                 <svg
@@ -73,11 +73,11 @@ const Squads = ({ open }) => {
                 <label className="block text-zinc-700 dark:text-zinc-200 mb-1">
                   Add Your First Member
                 </label>
-                <select className="w-full p-3 bg-zinc-200 dark:bg-zinc-600 text-zinc-700 dark:text-zinc-300 rounded-lg">
+                <select className="w-full p-3 bg-[#131416] text-zinc-700 dark:text-zinc-300 rounded-lg">
                   <option>Add Member</option>
                 </select>
               </div>
-              <button className="w-full py-3 bg-zinc-800 dark:bg-zinc-600 text-white font-bold rounded-lg mt-4">
+              <button className="w-full py-3 bg-[#5D5FEF] text-white font-bold rounded-lg mt-4">
                 Create Squad
               </button>
             </div>
