@@ -76,7 +76,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <button
-        className="fixed flex justify-center items-center gap-2 bottom-10 text-center right-10 bg-gray-950 text-white px-6 py-3 rounded-full shadow-lg"
+        className="fixed flex justify-center items-center gap-2 bottom-10 text-center right-10 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg"
         onClick={() => setIsChatbotOpen(true)}
       >
         Ask AI{" "}
