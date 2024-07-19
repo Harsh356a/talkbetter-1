@@ -149,7 +149,7 @@ const Sidebar = ({ openfun }) => {
           {open ? (
             <div className="lg:bottom-[2rem] flex fixed justify-between flex-col h-[86vh] pt-12 w-42 md:top-auto top-28 bg-[#000000] text-[#989BAC] lg:mx-5 mx-2 text-xs rounded-3xl bottom-[-1.2rem] sm:text-sm lg:w-64 sm:bottom-4">
               <div
-                className="flex flex-col gap-4 font-sans px-3"
+                className="flex flex-col gap-2 font-sans px-3"
                 onClick={() => {
                   setOpen(false), openfun(true);
                 }}
@@ -253,7 +253,7 @@ const Sidebar = ({ openfun }) => {
                   />
                   <h1>Call Logs</h1>
                 </div>
-                <div
+                {/* <div
                   className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
                     location.pathname === "/api" ? "active-tab" : ""
                   }`}
@@ -265,12 +265,12 @@ const Sidebar = ({ openfun }) => {
                     className="w-4 h-4 sm:w-10 sm:h-10"
                   />
                   <h1>Provider APIs</h1>
-                </div>
+                </div> */}
                 
               </div>
               
               <div
-                className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
+                className={`flex gap-1 md:mt-32 md:ml-2 sm:gap-3 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
                   location.pathname === "/profile" ? "active-tab" : ""
                 }`}
                 onClick={() => navigate("/profile")}
@@ -286,11 +286,11 @@ const Sidebar = ({ openfun }) => {
               </div>
               <div className="relative">
                 <button
-                  className="bg-zinc-900 hover:bg-zinc-800 text-white flex items-center p-2 rounded-lg space-x-2 max-w-lg"
+                  className="bg-zinc-900 md:ml-3 hover:bg-zinc-800 text-white flex items-center p-2 rounded-lg space-x-2 max-w-lg"
                   onClick={togglePopup}
                   ref={buttonRef}
                 >
-                  <div className="flex items-center justify-center bg-teal-600 rounded-full w-8 h-8">
+                  <div className="flex  items-center justify-center bg-teal-600 rounded-full w-8 h-8">
                     <svg
                       className="w-6 h-6 text-teal-200"
                       fill="currentColor"
@@ -333,7 +333,7 @@ const Sidebar = ({ openfun }) => {
                         <li onClick={() => navigate("/settings") } className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
                           <span>Settings</span>
                         </li>
-                        <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                        <li onClick={() => navigate("/apikeys")} className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
                           <span>API Keys</span>
                         </li>
                         <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
@@ -419,16 +419,16 @@ const Sidebar = ({ openfun }) => {
                   >
                     <img src={PhoneCall} alt="Call Logs" />
                   </div>
-                  <div
+                  {/* <div
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/api" ? "active-tab" : ""
                     }`}
                   >
                     <img src={WebhooksLogo} alt="Provider APIs" />
-                  </div>
+                  </div> */}
                 </div>
                 <div
-                  className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
+                  className={`flex md:mt-20 gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                     location.pathname === "/profile" ? "active-tab" : ""
                   }`}
                 >
@@ -491,6 +491,8 @@ const Sidebar = ({ openfun }) => {
           <Members open={open} />
         ) : location.pathname === "/settings" ? (
           <Settings email={email} open={open} />
+        ) : location.pathname === "/apikeys" ? (
+          <Provider open={open} />
         ) :
          (
           ""
