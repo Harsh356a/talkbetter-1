@@ -22,6 +22,7 @@ import "./Navbar.css";
 import Profile from "./Profile";
 import Overview from "./Overview";
 import Squads from "./Squads";
+import Provider from "./ProviderApi";
 import Members from "../pages/Members";
 import Settings from "../pages/Settings";
 const Sidebar = ({ openfun }) => {
@@ -482,15 +483,11 @@ const Sidebar = ({ openfun }) => {
           <Profile open={open} />
         ) : location.pathname === "/overview" ? (
           <Overview open={open} />
+        ) : location.pathname === "/api" ? (
+          <Provider open={open} />
         ) : location.pathname === "/squads" ? (
           <Squads open={open} />
-        ) :  location.pathname === "/members" ? (
-          <Members open={open} />
-        ) : location.pathname === "/settings" ? (
-          <Settings email={email} open={open} /> 
-        ) :
-        
-        (
+        ) : (
           ""
         )}
       </div>
