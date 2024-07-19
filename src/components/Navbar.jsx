@@ -487,7 +487,12 @@ const Sidebar = ({ openfun }) => {
           <Provider open={open} />
         ) : location.pathname === "/squads" ? (
           <Squads open={open} />
-        ) : (
+        ) : location.pathname === "/members" ? (
+          <Members open={open} />
+        ) : location.pathname === "/settings" ? (
+          <Settings email={email} open={open} />
+        ) :
+         (
           ""
         )}
       </div>
