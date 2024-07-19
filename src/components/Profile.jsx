@@ -12,14 +12,14 @@ const Profile = ({open}) => {
         <div className=" text-white">
           <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
             <div className="flex items-center mb-6">
-              <div className="bg-zinc-700 p-2 rounded-full mr-4">
+              <div className="bg-[#131416] p-2 rounded-full mr-4">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
               </div>
               <h1 className="text-2xl font-bold">Account</h1>
             </div>
-            <div className="bg-zinc-800 p-6 rounded-lg shadow-md">
+            <div className="bg-[#131416] p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-2">Settings</h2>
               <p className="text-zinc-400 mb-4">Customize your account details.</p>
               <form>
@@ -31,7 +31,7 @@ const Profile = ({open}) => {
                   <label className="block text-zinc-400 mb-1" htmlFor="password">New Password</label>
                   <input type="password" id="password" className="w-full p-2 bg-zinc-700 rounded border border-zinc-600 text-zinc-300" />
                 </div>
-                <button className="w-full bg-green-700 hover:bg-green-600 text-white py-2 px-4 rounded">Update New Password</button>
+                <button className="w-full bg-[#5D5FEF] text-white py-2 px-4 rounded">Update New Password</button>
               </form>
             </div>
           </div>
