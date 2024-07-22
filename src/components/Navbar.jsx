@@ -355,6 +355,7 @@ const Sidebar = ({ openfun }) => {
               <div className="flex fixed flex-col bg-black h-[84vh] w-[72px] justify-between items-center mx-2 rounded-3xl pt-8 py-5 lg:bottom-12 transition-all top-[5rem] lg:top-[4.8rem] xxs:top-[7rem] sm:top-[5rem]">
                 <div className="flex flex-col gap-4 items-center">
                   <div
+                  onClick={() => navigate("/overview")}
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/overview" ? "active-tab" : ""
                     }`}
@@ -370,6 +371,7 @@ const Sidebar = ({ openfun }) => {
                     </svg>
                   </div>
                   <div
+                  onClick={() => navigate("/") }
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/" ? "active-tab" : ""
                     }`}
@@ -377,6 +379,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={ApllePodCastLogo} alt="Assistants" />
                   </div>
                   <div
+                  onClick={() => navigate("/phone") }
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/phone" ? "active-tab" : ""
                     }`}
@@ -384,6 +387,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={Phone1} alt="Phone Numbers" />
                   </div>
                   <div
+                  onClick={() => navigate('/documents') }
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/documents" ? "active-tab" : ""
                     }`}
@@ -391,6 +395,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={File} alt="Documents" />
                   </div>
                   <div
+                  onClick={() => navigate('/squads') }
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/squads" ? "active-tab" : ""
                     }`}
@@ -406,6 +411,7 @@ const Sidebar = ({ openfun }) => {
                     </svg>
                   </div>
                   <div
+                  onClick={() => navigate("/voice") }
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/voice" ? "active-tab" : ""
                     }`}
@@ -413,6 +419,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={SpeakerHign} alt="Voice Library" />
                   </div>
                   <div
+                  onClick={() => navigate("/call") }
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/call" ? "active-tab" : ""
                     }`}
@@ -428,6 +435,7 @@ const Sidebar = ({ openfun }) => {
                   </div> */}
                 </div>
                 <div
+                onClick={() => navigate("/profile") }
                   className={`flex md:mt-20 gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                     location.pathname === "/profile" ? "active-tab" : ""
                   }`}
