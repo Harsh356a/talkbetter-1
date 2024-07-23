@@ -53,7 +53,7 @@ const Confi = ({ open }) => {
         return;
       }
 
-      await axios.put(
+      let a = await axios.put(
         "https://users.trainright.fit/api/configs/setDefaultAssistant",
         {
           assistantId: selectedOption.value,
@@ -64,6 +64,7 @@ const Confi = ({ open }) => {
           },
         }
       );
+      console.log("enables,", a);
     } catch (error) {
       console.error("Error setting default assistant", error);
     }

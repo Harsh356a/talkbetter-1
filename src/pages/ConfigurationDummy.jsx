@@ -18,7 +18,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [endCall, setEndCall] = useState(true);
-  const [selectedModel, setSelectedModel] = useState('Anthropic');
+  const [selectedModel, setSelectedModel] = useState("Anthropic");
 
   const recognitionRef = useRef(null);
   const socket = useRef(null);
@@ -39,8 +39,6 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
-
-   
 
     socket.current.on("audio-chunk", async (chunk) => {
       try {
@@ -271,6 +269,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       console.log("Assistant updated successfully:", response.data);
 
       // Second API call
+      console.log({ fillers, firstFillers, audioSpeed, voiceID, configid });
       const response1 = await axios.post(
         "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         {
@@ -304,11 +303,13 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsVisible(!isVisible);
   };
   function getconfigdata(data) {
-    let a = data.filter((e) => e._id === configid);
+    console.log([data])
+    let a = [data][0].filter((e) => e._id === configid);
     if (a.length > 0) {
       // console.log(a[0])
       setFirstFillers(a[0].firstFiller);
       setFillers(a[0].fillers);
+      // setConfigIdd(a[0]._id)
       setVoiceID(a[0].voiceId);
       setAudioSpeed(a[0].audioSpeed.$numberDecimal);
       // setApiKey(a[0].audioSpeed.$numberDecimal);
@@ -335,6 +336,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         );
         const data = response.data;
         setApiKey(data.data.apiKey);
+        console.log("configID",data.data.configId)
         localStorage.setItem("APIKEY", data.data.apiKey);
         setName(data.data.name);
         setId(data.data.assistantId);
@@ -770,11 +772,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                     Fillers
                   </label>
                   <ReactTagInput
-                  tags={fillers}
-                  placeholder="Add fillers"
-                  onChange={handleTagChange}
-                  sty
-                />
+                    tags={fillers}
+                    placeholder="Add fillers"
+                    onChange={handleTagChange}
+                    sty
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -804,7 +806,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   <label className="block text-sm font-medium mb-1">
                     Model
                   </label>
-                  <select value={selectedModel} onChange={handleChange} className="w-full p-2 bg-[#1F1B29] rounded text-white">
+                  <select
+                    value={selectedModel}
+                    onChange={handleChange}
+                    className="w-full p-2 bg-[#1F1B29] rounded text-white"
+                  >
                     <option>Anthropic</option>
                     <option>GPT 3.5</option>
                     <option>GPT 4.0</option>
