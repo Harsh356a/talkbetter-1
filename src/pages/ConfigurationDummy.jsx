@@ -28,27 +28,27 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const sourceNodeRef = useRef(null);
 
   useEffect(() => {
-    socket.current = io("https://voicebots.trainright.fit", {
+    socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: apikey, isVoiceNeeded: true },
     });
-
+  
     socket.current.on("connect", () => {
       setIsConnected(true);
     });
-
+  
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
-
+  
     socket.current.on("audio-chunk", async (chunk) => {
       try {
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext ||
             window.webkitAudioContext)();
         }
-
+  
         const audioData = new Uint8Array(chunk).buffer;
-
+  
         audioContextRef.current
           .decodeAudioData(audioData)
           .then((audioBuffer) => {
@@ -64,7 +64,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         console.error("Error processing audio chunk:", error);
       }
     });
-
+  
     return () => {
       socket.current.disconnect();
       if (audioContextRef.current) {
@@ -72,17 +72,20 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       }
     };
   }, [apikey]);
-
+  
   const playAudioQueue = async () => {
     if (audioBufferQueue.current.length > 0) {
-      setIsLoading(false);
       isPlayingRef.current = true;
       const audioBuffer = audioBufferQueue.current.shift();
       const sourceNode = audioContextRef.current.createBufferSource();
       sourceNode.buffer = audioBuffer;
       sourceNode.connect(audioContextRef.current.destination);
       sourceNode.onended = () => {
-        playAudioQueue();
+        if (audioBufferQueue.current.length > 0) {
+          playAudioQueue();
+        } else {
+          isPlayingRef.current = false;
+        }
       };
       sourceNode.start();
       sourceNodeRef.current = sourceNode;
@@ -90,7 +93,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       isPlayingRef.current = false;
     }
   };
-
+  
   const stopPlaybackAndClearQueue = () => {
     if (sourceNodeRef.current) {
       sourceNodeRef.current.stop();
@@ -100,76 +103,81 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsLoading(false);
   };
 
-  const handleSpeech = () => {
-    if (!isCalling) {
-      setIsCalling(true);
-      setEndCall(true);
-    } else {
-      setIsCalling(false);
-      setEndCall(false);
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      stopPlaybackAndClearQueue();
-      return;
-    }
-
-    if (!("webkitSpeechRecognition" in window)) {
-      alert(
-        "Your browser does not support speech recognition. Please use Chrome."
-      );
-      return;
-    }
-
-    if (isListening) {
+const handleSpeech = () => {
+  if (!isCalling) {
+    setIsCalling(true);
+    setEndCall(true);
+  } else {
+    setIsCalling(false);
+    setEndCall(false);
+    if (recognitionRef.current) {
       recognitionRef.current.stop();
-      setIsListening(false);
-      stopPlaybackAndClearQueue();
-      return;
     }
+    stopPlaybackAndClearQueue();
+    return;
+  }
 
-    if (isPlayingRef.current) {
-      stopPlaybackAndClearQueue();
-    }
+  if (!("webkitSpeechRecognition" in window)) {
+    alert(
+      "Your browser does not support speech recognition. Please use Chrome."
+    );
+    return;
+  }
 
-    const recognition = new window.webkitSpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+  if (isListening) {
+    recognitionRef.current.stop();
+    setIsListening(false);
+    stopPlaybackAndClearQueue();
+    return;
+  }
 
-    recognition.onstart = () => {
-      console.log("Speech recognition started");
-    };
+  if (isPlayingRef.current) {
+    stopPlaybackAndClearQueue();
+  }
 
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error", event);
-      alert(`Speech recognition error: ${event.error}`);
-      setIsListening(false);
-    };
+  const recognition = new window.webkitSpeechRecognition();
+  recognitionRef.current = recognition;
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
 
-    recognition.onend = () => {
-      console.log("Speech recognition ended");
-      if (isCalling) {
-        recognition.start(); // Restart recognition if the call is still active
-      } else {
-        setIsListening(false);
-        setIsLoading(true);
-      }
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map((result) => result[0].transcript)
-        .join(" ");
-      setText(transcript);
-      console.log("Speech recognition result:", transcript);
-      socket.current.emit("message", transcript);
-    };
-
-    recognition.start();
-    setIsListening(true);
+  recognition.onstart = () => {
+    console.log("Speech recognition started");
   };
+
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error", event);
+    alert(`Speech recognition error: ${event.error}`);
+    setIsListening(false);
+  };
+
+  recognition.onend = () => {
+    console.log("Speech recognition ended");
+    if (isCalling) {
+      recognition.start(); // Restart recognition if the call is still active
+    } else {
+      setIsListening(false);
+      setIsLoading(true);
+    }
+  };
+
+  recognition.onresult = (event) => {
+    let finalTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      }
+    }
+    setText(finalTranscript);
+    console.log("Speech recognition result:", finalTranscript);
+    if (finalTranscript) {
+      socket.current.emit("message", finalTranscript);
+    }
+  };
+
+  recognition.start();
+  setIsListening(true);
+};
 
   const handleMute = () => {
     setIsMuted(!isMuted);

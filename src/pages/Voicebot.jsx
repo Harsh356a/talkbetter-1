@@ -17,9 +17,11 @@ const SpeechToText = ({ data }) => {
     socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: data, isVoiceNeeded: true },
     });
-    socket.on('getToken', async (token) => {
-      console.log(token);
-    })
+
+    socket.current.on("connect", () => {
+      setIsConnected(true);
+    });
+
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
@@ -27,17 +29,20 @@ const SpeechToText = ({ data }) => {
     socket.current.on("audio-chunk", async (chunk) => {
       try {
         console.log("Received chunk:", chunk);
+
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext ||
             window.webkitAudioContext)();
         }
 
+        // Convert chunk to ArrayBuffer
         const audioData = new Uint8Array(chunk).buffer;
         console.log("Audio data buffer:", audioData);
 
         audioContextRef.current
           .decodeAudioData(audioData)
           .then((audioBuffer) => {
+            console.log("Decoded audio buffer:", audioBuffer);
             audioBufferQueue.current.push(audioBuffer);
             if (!isPlayingRef.current) {
               playAudioQueue();
@@ -45,15 +50,13 @@ const SpeechToText = ({ data }) => {
           })
           .catch((error) => {
             console.error("Error decoding audio data:", error);
+            console.log("Audio data as base64:", btoa(String.fromCharCode(...new Uint8Array(chunk))));
           });
       } catch (error) {
         console.error("Error processing audio chunk:", error);
       }
     });
-  socket.on('getToken', async (token) => {
-      console.log(token);
-    })
-    
+
     return () => {
       socket.current.disconnect();
       if (audioContextRef.current) {
