@@ -25,8 +25,9 @@ const Voice = ({ open }) => {
           : "lg:w-[89%] lg:left-[10%] w-[70%] left-[25%]"
       } fixed overflow-y-scroll gap-[24px] lg:top-[4.6rem] xl:top-[5rem] bg-black h-[85vh] rounded-3xl text-white   w-64 top-[6.9rem] sm:top-[4.9rem] `}
     >
-      <div className="p-6">
+      <div className="p-6"> 
         <div className="flex gap-4 mb-6">
+        <label className="mt-2" htmlFor="">Provider</label>
            <select
             className="p-2 bg-[#121417] border border-gray-300 rounded"
             value={voiceEngine}
@@ -43,6 +44,7 @@ const Voice = ({ open }) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <div className="mt-2" >Gender</div>
           <select
             className="p-2 bg-[#121417] border border-gray-300 rounded"
             value={gender}
@@ -53,6 +55,7 @@ const Voice = ({ open }) => {
             <option value="female">Female</option>
             <option value="neutral">Neutral</option>
           </select>
+          <div className="mt-2" >Accent</div>
           <select
             className="p-2 bg-[#121417] border border-gray-300 rounded"
             value={accent}
