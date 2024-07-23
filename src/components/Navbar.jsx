@@ -9,6 +9,7 @@ import SpeakerHign from "../images/SpeakerHigh.png";
 import WebhooksLogo from "../images/WebhooksLogo.png";
 import TalkBetter from "../images/TalkBetter.png";
 import Assistant from "./Assistant";
+import axios from "axios"
 import Phone from "./Phone";
 import Documents from "./Documents";
 import Voice from "./Voice";
@@ -29,6 +30,7 @@ const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const[assistants,setAssistants]= useState()
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -102,6 +104,35 @@ const Sidebar = ({ openfun }) => {
     hideSidebarPaths.includes(location.pathname) ||
     hideSidebarRegex.test(location.pathname);
 
+    useEffect(() => {
+      const fetchAssistants = async () => {
+        const token = localStorage.getItem("Token");
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+  
+        try {
+          const response = await axios.get(
+            "https://configstaging.trainright.fit/api/configs/findAllAssistants",
+            {
+              headers: {
+                Authorization: ` ${token}`,
+              },
+            }
+          );
+          setAssistants(response.data.data);
+          // console.log(response.data.data)
+         
+        } catch (error) {
+          console.error("Error fetching assistants", error);
+         
+        }
+      };
+  
+      fetchAssistants();
+    }, []);
+ 
   return (
     <div className="h-screen flex">
       {!shouldHideSidebar && (
@@ -113,13 +144,14 @@ const Sidebar = ({ openfun }) => {
           <div className="w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5">
             <img src={TalkBetter} className="h-6 w-32" alt="TalkBetter" />
             <div className="flex gap-5 items-center pr-5 relative">
+           
               <button
-                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs"
+                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full"
                 onClick={() => navigate("/createassistant")}
               >
                 Create Assistant
               </button>
-              <button className="rounded-md text-xs p-3 bg-[#000000] text-white">
+              <button className="rounded-md text-xs p-3 bg-[#000000] text-white w-full">
                 + Add AI for help
               </button>
               <div className="  gap-5  flex">
