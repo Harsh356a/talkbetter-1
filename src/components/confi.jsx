@@ -54,7 +54,7 @@ const Confi = ({ open }) => {
       }
 
       let a = await axios.put(
-        "https://users.trainright.fit/api/configs/setDefaultAssistant",
+        "https://configstaging.trainright.fit/api/configs/setDefaultAssistant",
         {
           assistantId: selectedOption.value,
         },
