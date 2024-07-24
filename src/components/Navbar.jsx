@@ -142,7 +142,7 @@ const Sidebar = ({ openfun }) => {
           } fixed left-0 flex flex-col rounded w-full cursor-pointer`}
         >
           <div className="w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5">
-            <img src={TalkBetter} className="h-6 w-32" alt="TalkBetter" />
+            <img src={TalkBetter} className="h-10 w-64" alt="TalkBetter" />
             <div className="flex gap-5 items-center pr-5 relative">
            
               <button

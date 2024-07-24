@@ -109,6 +109,7 @@ const TemplateSelection = ({ open }) => {
             "s3://voice-cloning-zero-shot/d9ff78ba-d016-47f6-b0ef-dd630f59414e/female-cs/manifest.json",
           firstFiller: "Hello there Alex this side from Blue Lotus.",
           audioSpeed: "0.9",
+          informationNeeded: "",
         },
         {
           headers: {
@@ -116,7 +117,7 @@ const TemplateSelection = ({ open }) => {
           },
         }
       );
-console.log(responseConfig &&responseConfig.data.data._id)
+      console.log(responseConfig && responseConfig.data.data._id);
       if (responseConfig && responseConfig.data.data._id) {
         const response = await axios.post(
           "https://configstaging.trainright.fit/api/configs/createAssistant",

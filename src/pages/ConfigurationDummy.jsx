@@ -207,7 +207,7 @@ const handleSpeech = () => {
   const [audioSpeed, setAudioSpeed] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
+const [dataPrompt,setDataPrompt]= useState("")
   const chatRef = useRef();
   const handleButtonClick = (contentId) => {
     setActiveContent(contentId);
@@ -287,6 +287,7 @@ const handleSpeech = () => {
           voiceId: voiceID,
           id: configid,
           aiModel: selectedModel,
+          informationNeeded:dataPrompt
         },
         {
           headers: {
@@ -301,6 +302,7 @@ const handleSpeech = () => {
       setFillers(response1.data.fillers);
       setVoiceID(response1.data.voiceId);
       setAudioSpeed(response1.data.audioSpeed);
+      setDataPrompt(response1.data.informationNeeded)
       alert("Updated");
       window.location.reload();
     } catch (error) {
@@ -317,6 +319,7 @@ const handleSpeech = () => {
       // console.log(a[0])
       setFirstFillers(a[0].firstFiller);
       setFillers(a[0].fillers);
+      setDataPrompt(a[0].informationNeeded);
       // setConfigIdd(a[0]._id)
       setVoiceID(a[0].voiceId);
       setAudioSpeed(a[0].audioSpeed.$numberDecimal);
@@ -861,6 +864,17 @@ const handleSpeech = () => {
                     type="checkbox"
                     className="w-5 h-5 text-green-500 bg-zinc-800 rounded border-zinc-600"
                   />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                  Data Prompt
+                  </label>
+                  <textarea
+                    className="p-3 h-32 w-full bg-zinc-900 rounded resize-none text-white"
+                    onChange={(e) => setDataPrompt(e.target.value)}
+                    value={dataPrompt}
+                  />
+                
                 </div>
               </div>
             </div>
