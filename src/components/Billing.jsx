@@ -17,7 +17,7 @@ const Billing = ({ open, id }) => {
     const fetchPlans = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7006/api/users/plans"
+          "https://configstaging.trainright.fit/api/users/plans"
         );
         setPlans(response.data.plans);
       } catch (err) {
@@ -36,7 +36,7 @@ const Billing = ({ open, id }) => {
       const userId = id;
       const token = localStorage.getItem("Token");
       await axios.post(
-        "http://localhost:7006/api/users/updateUserPlan",
+        "https://configstaging.trainright.fit/api/users/updateUserPlan",
         {
           id: userId,
           planId: planId,
@@ -97,8 +97,6 @@ const Billing = ({ open, id }) => {
       console.log(error);
     }
   };
-
-  console.log(selectedPlanId, "raju");
 
   return (
     <div
