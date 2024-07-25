@@ -1,14 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const Billing = ({ open, id }) => {
+const Billing = ({ open, id, selectedPlans }) => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("month");
   const [selectedPlanId, setSelectedPlanId] = useState(
-    "66a12fa4072d47adf5c01b80"
+    "66a1f6b20700ca562036fa6e"
   );
   const [price, setPrice] = useState(100);
   // const token = localStorage.getItem("Token");
@@ -108,6 +108,10 @@ const Billing = ({ open, id }) => {
     >
       {loading ? (
         <p>Loading...</p>
+      ) : selectedPlans?._id ? (
+        <h2 className="text-3xl font-bold mb-12">
+          👑You are already subscribed!👑
+        </h2>
       ) : (
         <div className="flex flex-col items-center justify-center h-full w-full p-8">
           <h2 className="text-3xl font-bold mb-12">Choose Your Plan</h2>

@@ -36,6 +36,7 @@ const Sidebar = ({ openfun }) => {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [selectedPlans, setSelectedPlans] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const popupRef = useRef(null);
@@ -50,6 +51,25 @@ const Sidebar = ({ openfun }) => {
       setId(userDetails._id);
     }
   });
+
+  useEffect(() => {
+    if (id) {
+      const fetchUserDetails = async () => {
+        try {
+          const response = await axios.get(
+            `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
+          );
+          const userSelectedPlan = response?.data?.result?.selectedPlan;
+
+          setSelectedPlans(userSelectedPlan);
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      };
+
+      fetchUserDetails();
+    }
+  }, [id]);
 
   const handleClickOutside = (event) => {
     if (
@@ -137,6 +157,25 @@ const Sidebar = ({ openfun }) => {
     fetchAssistants();
   }, []);
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(
+          `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
+        );
+        const userSelectedPlan = response?.data?.result?.selectedPlan;
+
+        setSelectedPlans(userSelectedPlan);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [id]);
+
+  console.log(selectedPlans);
+
   return (
     <div className="h-screen flex">
       {!shouldHideSidebar && (
@@ -160,16 +199,29 @@ const Sidebar = ({ openfun }) => {
               <div className="  gap-5  flex">
                 <button
                   className={`${
-                    response ? "rounded-full text-xs" : "rounded-md text-xs"
-                  } px-5 p-3 bg-[#5D5FEF] text-white`}
+                    response ? "rounded-full text-xs" : "rounded-full text-xs"
+                  } relative px-4 p-3 bg-[#5D5FEF] text-white`}
                   onClick={toggleDropdown}
                 >
                   {userName ? (
-                    userName
+                    <>
+                      {userName}
+                      {selectedPlans?._id && (
+                        <span className="relative group">
+                          <span className="absolute bottom-3 transform translate-x-1/2 -translate-y-1/2">
+                            👑
+                          </span>
+                          <span className="absolute bottom-full right-0 mb-2 hidden w-max text-xs text-white bg-black p-1 rounded group-hover:block">
+                            Premium Member
+                          </span>
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <span onClick={() => navigate("/login")}>Login</span>
                   )}
                 </button>
+
                 {response && dropdownOpen && (
                   <button
                     className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
@@ -545,7 +597,7 @@ const Sidebar = ({ openfun }) => {
         ) : location.pathname === "/squads" ? (
           <Squads open={open} />
         ) : location.pathname === "/billing" ? (
-          <Billing open={open} id={id} />
+          <Billing open={open} id={id} selectedPlans={selectedPlans} />
         ) : location.pathname === "/members" ? (
           <Members open={open} />
         ) : location.pathname === "/settings" ? (
