@@ -27,6 +27,8 @@ import Provider from "./ProviderApi";
 import Members from "../pages/Members";
 import Settings from "../pages/Settings";
 import Billing from "./Billing";
+import Referral from "./Referral";
+import AddCoin from "./AddCoin";
 const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
@@ -37,6 +39,9 @@ const Sidebar = ({ openfun }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedPlans, setSelectedPlans] = useState(null);
+  const [referralOpen, setReferralOpen] = useState(false);
+  const [addCoinOpen, setAddCoinOpen] = useState(false);
+  const [coins, setCoins] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const popupRef = useRef(null);
@@ -51,25 +56,6 @@ const Sidebar = ({ openfun }) => {
       setId(userDetails._id);
     }
   });
-
-  useEffect(() => {
-    if (id) {
-      const fetchUserDetails = async () => {
-        try {
-          const response = await axios.get(
-            `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
-          );
-          const userSelectedPlan = response?.data?.result?.selectedPlan;
-
-          setSelectedPlans(userSelectedPlan);
-        } catch (error) {
-          console.error("Error fetching user details:", error);
-        }
-      };
-
-      fetchUserDetails();
-    }
-  }, [id]);
 
   const handleClickOutside = (event) => {
     if (
@@ -159,22 +145,22 @@ const Sidebar = ({ openfun }) => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get(
-          `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
-        );
-        const userSelectedPlan = response?.data?.result?.selectedPlan;
-
-        setSelectedPlans(userSelectedPlan);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
+      if (id) {
+        try {
+          const response = await axios.get(
+            `http://localhost:7006/api/users/getUserDetails/${id}`
+          );
+          const userSelectedPlan = response?.data?.result?.selectedPlan;
+          setSelectedPlans(userSelectedPlan);
+          setCoins(response?.data?.result?.coins);
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
       }
     };
 
     fetchUserDetails();
   }, [id]);
-
-  console.log(selectedPlans);
 
   return (
     <div className="h-screen flex">
@@ -186,6 +172,17 @@ const Sidebar = ({ openfun }) => {
         >
           <div className="w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5">
             <img src={TalkBetter} className="h-10 w-64" alt="TalkBetter" />
+            <div className="rounded-md text-sm font-semibold px-1 py-1 bg-transparent text-white flex items-center gap-2 border border-gray-600">
+              <p className="flex items-center">
+                🥞<span>{coins}</span>
+              </p>
+              <button
+                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full"
+                onClick={() => setAddCoinOpen(true)}
+              >
+                Add coins
+              </button>
+            </div>
             <div className="flex gap-5 items-center pr-5 relative">
               <button
                 className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full"
@@ -195,6 +192,12 @@ const Sidebar = ({ openfun }) => {
               </button>
               <button className="rounded-md text-xs p-3 bg-[#000000] text-white w-full">
                 + Add AI for help
+              </button>
+              <button
+                className="rounded-md text-xs p-3 bg-[#5D5FEF] text-white w-full"
+                onClick={() => setReferralOpen(true)}
+              >
+                Refer a friend
               </button>
               <div className="  gap-5  flex">
                 <button
@@ -608,6 +611,14 @@ const Sidebar = ({ openfun }) => {
           ""
         )}
       </div>
+
+      <Referral isOpen={referralOpen} onClose={() => setReferralOpen(false)} />
+      <AddCoin
+        isOpen={addCoinOpen}
+        onClose={() => setAddCoinOpen(false)}
+        userId={id}
+        planId={selectedPlans?._id}
+      />
     </div>
   );
 };

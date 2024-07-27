@@ -1,15 +1,75 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
+const PricingPlan = ({ plan, isSelected, onSelect }) => (
+  <div
+    className={`bg-gray-800 p-6 rounded-lg ${
+      isSelected ? "border-2 border-[#5D5FEF]" : ""
+    }`}
+  >
+    <h2 className="text-xl font-bold text-white mb-4">{plan.name}</h2>
+    <div className="flex items-center gap-2">
+      <p className="text-3xl font-bold text-white mb-6">
+        ₹{plan.price - plan.discount}
+        <span className="text-sm font-normal">/{plan.id}</span>
+      </p>
+      {plan.discount > 0 && (
+        <p className="text-sm text-green-400 mb-2">Save ₹{plan.discount}</p>
+      )}
+    </div>
+    <button
+      onClick={() => onSelect(plan.id, plan.price)}
+      className="w-full bg-[#5D5FEF] text-white py-2 rounded-md mb-6 hover:bg-[#5D5FEF] transition duration-300"
+    >
+      Choose Plan
+    </button>
+    <ul className="space-y-2">
+      <li className="flex items-center text-sm text-gray-300">
+        <svg
+          className="w-4 h-4 mr-2 text-green-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+        {plan.coins} Coins
+      </li>
+
+      <li className="flex items-center text-sm text-gray-300">
+        <svg
+          className="w-4 h-4 mr-2 text-green-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+        24/7 customer support
+      </li>
+    </ul>
+  </div>
+);
+
 const Billing = ({ open, id, selectedPlans }) => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("month");
-  const [selectedPlanId, setSelectedPlanId] = useState(
-    "66a1f6b20700ca562036fa6e"
-  );
+  const [selectedPlanId, setSelectedPlanId] = useState(plans[0]?._id);
   const [price, setPrice] = useState(100);
   // const token = localStorage.getItem("Token");
 
@@ -17,7 +77,8 @@ const Billing = ({ open, id, selectedPlans }) => {
     const fetchPlans = async () => {
       try {
         const response = await axios.get(
-          "https://configstaging.trainright.fit/api/users/plans"
+          // "https://configstaging.trainright.fit/api/users/plans"
+          "http://localhost:7006/api/users/plans"
         );
         setPlans(response.data.plans);
       } catch (err) {
@@ -36,7 +97,8 @@ const Billing = ({ open, id, selectedPlans }) => {
       const userId = id;
       const token = localStorage.getItem("Token");
       await axios.post(
-        "https://configstaging.trainright.fit/api/users/updateUserPlan",
+        // "https://configstaging.trainright.fit/api/users/updateUserPlan",
+        "http://localhost:7006/api/users/updateUserPlan",
         {
           id: userId,
           planId: planId,
@@ -48,6 +110,7 @@ const Billing = ({ open, id, selectedPlans }) => {
         }
       );
       alert("Plan updated successfully");
+      window.location.reload();
     } catch (error) {
       alert("Failed to update plan");
       console.error(error);
@@ -98,6 +161,12 @@ const Billing = ({ open, id, selectedPlans }) => {
     }
   };
 
+  const handleChangePlan = (plan, planId, planPrice) => {
+    setSelectedPlan(plan);
+    setSelectedPlanId(planId);
+    setPrice(planPrice);
+  };
+
   return (
     <div
       className={`${
@@ -108,69 +177,38 @@ const Billing = ({ open, id, selectedPlans }) => {
     >
       {loading ? (
         <p>Loading...</p>
-      ) : selectedPlans?._id ? (
+      ) : !selectedPlans?._id ? (
         <h2 className="text-3xl font-bold mb-12">
           👑You are already subscribed!👑
         </h2>
       ) : (
-        <div className="flex flex-col items-center justify-center h-full w-full p-8">
-          <h2 className="text-3xl font-bold mb-12">Choose Your Plan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 overflow-auto">
-            {plans?.map((plan) => (
-              <div
+        <>
+          <h1 className="text-4xl font-bold text-white text-center mb-12">
+            Choose Your Plan
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {plans.map((plan) => (
+              <PricingPlan
                 key={plan.id}
-                className={`
-        p-8 rounded-2xl cursor-pointer transition-all
-        backdrop-filter backdrop-blur-md
-        bg-white bg-opacity-10
-        hover:bg-opacity-20
-        border border-white border-opacity-20
-        shadow-lg
-        ${
-          selectedPlan === plan.id
-            ? "bg-blue-600 bg-opacity-30 border-blue-400"
-            : ""
-        }
-        w-full
-      `}
-                onClick={() => {
-                  setSelectedPlan(plan.id);
-                  setSelectedPlanId(plan._id);
-                  setPrice(
-                    plan.price - (plan.price * plan.discountPercentage) / 100
-                  );
-                }}
-              >
-                <h3 className="md:text-2xl text-lg font-semibold mb-4">
-                  {plan.name}
-                </h3>
-                <p className="md:text-4xl text-2xl font-bold">
-                  ₹{plan.price - (plan.price * plan.discountPercentage) / 100}
-                </p>
-                {plan.discountPercentage != 0 && (
-                  <p className="text-sm font-bold flex items-center gap-2 mt-1 ml-1">
-                    <span className="line-through text-red-400">
-                      {" "}
-                      ₹{plan.price}
-                    </span>
-                    <span className=" text-green-400">
-                      {plan.discountPercentage}% off
-                    </span>
-                  </p>
-                )}
-                {selectedPlan === plan.id && (
-                  <p className="mt-4 text-sm">Selected</p>
-                )}
-              </div>
+                plan={plan}
+                isSelected={selectedPlan === plan.id}
+                onSelect={() =>
+                  handleChangePlan(
+                    plan.id,
+                    plan._id,
+                    plan.price - plan.discount
+                  )
+                }
+              />
             ))}
           </div>
           <button
             onClick={displayRazorpay}
-            className="px-8 py-4 bg-[#5D5FEF] rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
+            className="mt-8 bg-[#5D5FEF] text-white py-3 px-6 rounded-md hover:bg-[#5D5FEF] transition duration-300"
           >
-            Subscribe Now
+            Proceed to Payment
           </button>
-        </div>
+        </>
       )}
     </div>
   );
