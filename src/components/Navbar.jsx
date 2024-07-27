@@ -29,6 +29,7 @@ import Settings from "../pages/Settings";
 import Billing from "./Billing";
 import Referral from "./Referral";
 import AddCoin from "./AddCoin";
+import { FaCoins } from "react-icons/fa";
 const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
@@ -172,12 +173,13 @@ const Sidebar = ({ openfun }) => {
         >
           <div className="w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5">
             <img src={TalkBetter} className="h-10 w-64" alt="TalkBetter" />
-            <div className="rounded-md text-sm font-semibold px-1 py-1 bg-transparent text-white flex items-center gap-2 border border-gray-600">
+            <div className="rounded-md text-sm font-semibold px-4 py-2 bg-gradient-to-r from-gray-800 to-gray-900 text-white flex items-center gap-4 border border-gray-600 shadow-lg">
               <p className="flex items-center">
-                🥞<span>{coins}</span>
+                <FaCoins className="text-yellow-400 mr-2" />
+                <span className="text-lg">{coins}</span>
               </p>
               <button
-                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full"
+                className="rounded-md py-2 px-4 bg-[#5D5FEF] text-white text-sm hover:bg-[#4a4cda] transition duration-300"
                 onClick={() => setAddCoinOpen(true)}
               >
                 Add coins

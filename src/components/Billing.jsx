@@ -1,32 +1,44 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { FaInfoCircle } from "react-icons/fa";
 
-const PricingPlan = ({ plan, isSelected, onSelect }) => (
+const PricingPlan = ({ plan, isSelected, onSelect, isBestValue }) => (
   <div
-    className={`bg-gray-800 p-6 rounded-lg ${
-      isSelected ? "border-2 border-[#5D5FEF]" : ""
+    className={`relative bg-gradient-to-r from-gray-700 to-gray-900 p-8 rounded-lg shadow-lg transform transition-transform duration-300 ${
+      isSelected
+        ? "border-4 border-[#5D5FEF] scale-105"
+        : "border-2 border-gray-700"
     }`}
   >
-    <h2 className="text-xl font-bold text-white mb-4">{plan.name}</h2>
-    <div className="flex items-center gap-2">
-      <p className="text-3xl font-bold text-white mb-6">
+    {isBestValue && (
+      <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 rounded-bl-lg text-sm font-bold">
+        Best Value
+      </div>
+    )}
+    <h2 className="text-2xl font-bold text-white mb-4">{plan.name}</h2>
+    <div className="flex items-baseline gap-2 mb-6">
+      <p className="text-4xl font-extrabold text-white">
         ₹{plan.price - plan.discount}
-        <span className="text-sm font-normal">/{plan.id}</span>
+        <span className="text-lg font-normal">/{plan.id}</span>
       </p>
       {plan.discount > 0 && (
-        <p className="text-sm text-green-400 mb-2">Save ₹{plan.discount}</p>
+        <p className="text-md text-green-400">Save ₹{plan.discount}</p>
       )}
     </div>
     <button
       onClick={() => onSelect(plan.id, plan.price)}
-      className="w-full bg-[#5D5FEF] text-white py-2 rounded-md mb-6 hover:bg-[#5D5FEF] transition duration-300"
+      className={`w-full py-3 rounded-md mb-6 transition duration-300 ${
+        isSelected
+          ? "bg-green-500 hover:bg-green-600"
+          : "bg-[#5D5FEF] hover:bg-blue-600"
+      } text-white font-bold`}
     >
-      Choose Plan
+      {isSelected ? "Plan Selected" : "Choose Plan"}
     </button>
-    <ul className="space-y-2">
-      <li className="flex items-center text-sm text-gray-300">
+    <ul className="space-y-4">
+      <li className="flex items-center text-lg text-gray-300">
         <svg
-          className="w-4 h-4 mr-2 text-green-500"
+          className="w-5 h-5 mr-3 text-green-500 animate-bounce"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -42,9 +54,9 @@ const PricingPlan = ({ plan, isSelected, onSelect }) => (
         {plan.coins} Coins
       </li>
 
-      <li className="flex items-center text-sm text-gray-300">
+      <li className="flex items-center text-lg text-gray-300">
         <svg
-          className="w-4 h-4 mr-2 text-green-500"
+          className="w-5 h-5 mr-3 text-green-500 animate-bounce"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -68,7 +80,7 @@ const Billing = ({ open, id, selectedPlans }) => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState("month");
+  const [selectedPlan, setSelectedPlan] = useState("year");
   const [selectedPlanId, setSelectedPlanId] = useState(plans[0]?._id);
   const [price, setPrice] = useState(100);
   // const token = localStorage.getItem("Token");
@@ -204,7 +216,7 @@ const Billing = ({ open, id, selectedPlans }) => {
           </div>
           <button
             onClick={displayRazorpay}
-            className="mt-8 bg-[#5D5FEF] text-white py-3 px-6 rounded-md hover:bg-[#5D5FEF] transition duration-300"
+            className="font-bold hover:scale-105 mt-8 bg-[#5D5FEF] text-white py-3 px-6 rounded-md hover:bg-[#5D5FEF] transition duration-300"
           >
             Proceed to Payment
           </button>

@@ -78,41 +78,43 @@ const AddCoin = ({ isOpen, onClose, userId, planId }) => {
     }
   };
 
-  const buttonClass = (coins) =>
-    noOfCoins === coins
-      ? "bg-blue-500 text-white font-bold py-2 px-4 rounded"
-      : "border border-blue-500 text-blue-500 font-bold py-2 px-4 rounded";
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#121212] text-white p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-end mb-2">
-          <RxCross2 onClick={onClose} className="w-6 h-6 cursor-pointer" />
+    <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-2xl w-[600px] max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Add Coins</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <RxCross2 className="w-6 h-6" />
+          </button>
         </div>
-        <div className="mb-4">
-          <h2 className="text-xl mb-4">Add Coins</h2>
-          <div className="flex gap-4 mb-4">
-            <button
-              className={buttonClass(100)}
-              onClick={() => setNoOfCoins(100)}
-            >
-              100 Coins
-            </button>
-            <button
-              className={buttonClass(500)}
-              onClick={() => setNoOfCoins(500)}
-            >
-              500 Coins
-            </button>
-            <button
-              className={buttonClass(1000)}
-              onClick={() => setNoOfCoins(1000)}
-            >
-              1000 Coins
-            </button>
+        <div className="mb-8">
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {[100, 500, 1000].map((amount) => (
+              <button
+                key={amount}
+                onClick={() => setNoOfCoins(amount)}
+                className={`
+              py-3 px-4 rounded-lg text-lg font-semibold
+              ${
+                noOfCoins === amount
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }
+            `}
+              >
+                {amount} Coins
+              </button>
+            ))}
           </div>
-          <div className="mb-4">
-            <label className="block mb-2" htmlFor="custom-coins">
+
+          <div>
+            <label
+              className="block mb-2 text-lg font-medium"
+              htmlFor="custom-coins"
+            >
               Custom Amount
             </label>
             <input
@@ -120,13 +122,14 @@ const AddCoin = ({ isOpen, onClose, userId, planId }) => {
               id="custom-coins"
               placeholder="Add custom coins..."
               onChange={(e) => setNoOfCoins(Number(e.target.value))}
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               min="0"
             />
           </div>
         </div>
+
         <button
-          className="bg-[#5D5FEF] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg text-lg"
           onClick={displayRazorpay}
         >
           Add Coins
