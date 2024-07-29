@@ -81,18 +81,20 @@ const Billing = ({ open, id, selectedPlans }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("year");
-  const [selectedPlanId, setSelectedPlanId] = useState(plans[0]?._id);
-  const [price, setPrice] = useState(100);
+  const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [price, setPrice] = useState(1000);
   // const token = localStorage.getItem("Token");
 
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         const response = await axios.get(
-          // "https://configstaging.trainright.fit/api/users/plans"
-          "http://localhost:7006/api/users/plans"
+          "https://configstaging.trainright.fit/api/users/plans"
         );
         setPlans(response.data.plans);
+        if (selectedPlanId === "") {
+          setSelectedPlanId(response.data.plans[1]?._id);
+        }
       } catch (err) {
         setError(err.message);
         console.log(err);
@@ -102,17 +104,18 @@ const Billing = ({ open, id, selectedPlans }) => {
     };
 
     fetchPlans();
-  }, []);
+  }, [selectedPlanId]);
 
-  const handlePlanSelect = async (planId) => {
+  console.log(selectedPlanId);
+  const handlePlanSelect = async (id, planId) => {
     try {
       const userId = id;
       const token = localStorage.getItem("Token");
       await axios.post(
-        // "https://configstaging.trainright.fit/api/users/updateUserPlan",
-        "http://localhost:7006/api/users/updateUserPlan",
+        "https://configstaging.trainright.fit/api/users/updateUserPlan",
+
         {
-          id: userId,
+          id: id,
           planId: planId,
         },
         {
@@ -159,7 +162,7 @@ const Billing = ({ open, id, selectedPlans }) => {
         handler: async function (response) {
           await response.razorpay_payment_id;
           setPaymentSuccess(true);
-          handlePlanSelect(selectedPlanId);
+          handlePlanSelect(id, selectedPlanId);
         },
         prefill: {
           name: "TalkBetter",
