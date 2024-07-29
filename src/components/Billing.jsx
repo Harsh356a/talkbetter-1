@@ -154,7 +154,7 @@ const Billing = ({ open, id, selectedPlans }) => {
       await loadScript("https://checkout.razorpay.com/v1/checkout.js");
 
       const options = {
-        key: "rzp_test_kyxaKvdFCrzFh2",
+        key: "rzp_test_Ix3Rt2w68z35tv",
         currency: "INR",
         amount: Number(price) * 100,
         name: "TalkBetter",
