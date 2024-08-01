@@ -5,7 +5,7 @@ const Profile = ({open}) => {
     <div
       className={`${
         open
-          ? "lg:w-[65%] lg:left-[30%] left-[10rem] w-[60%] sm:left-[15rem] md:w-[70%] sm:w-[62%] xl:w-[75%] xl:left-[23%] xm:w-[68%]"
+          ? "lg:w-[65%] lg:left-[30%] left-[10rem] w-[60%] sm:left-[15rem] md:w-[70%] sm:w-[62%] xl:w-[79%] xl:left-[20%] xm:w-[68%]"
           : "lg:w-[89%]  lg:left-[19%] w-[70%]   left-[25%]"
       } fixed  lg:top-[4.6rem] xl:top-[5rem] bg-black h-[85vh]  rounded-3xl text-white  w-64 top-[6.9rem] sm:top-[4.9rem] `}
     >

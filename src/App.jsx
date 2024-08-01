@@ -75,13 +75,13 @@ function App() {
           <Route path="/chatbots" element={<Chatbot />}></Route>
         </Routes>
       </BrowserRouter>
-      <button
+      {/* <button
         className="fixed flex justify-center items-center gap-2 bottom-10 text-center right-10 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg"
         onClick={() => setIsChatbotOpen(true)}
       >
         Ask AI{" "}
         <span className="text-[#5D5FEF] font-extrabold text-2xl">TB</span>
-      </button>
+      </button> */}
       {isChatbotOpen && (
         <ChatbotModal onClose={() => setIsChatbotOpen(false)} />
       )}

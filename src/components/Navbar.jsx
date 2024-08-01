@@ -270,7 +270,7 @@ const Sidebar = ({ openfun }) => {
               </div>
               
               <div
-                className={`flex gap-1 md:mt-32 md:ml-2 sm:gap-3 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
+                className={`flex gap-1  md:mt-3 md:ml-6 sm:gap-3 mx-9 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
                   location.pathname === "/profile" ? "active-tab" : ""
                 }`}
                 onClick={() => navigate("/profile")}
@@ -284,7 +284,7 @@ const Sidebar = ({ openfun }) => {
                 </svg>
                 <h1>Profile</h1>
               </div>
-              <div className="relative">
+              <div className="relative  ">
                 <button
                   className="bg-zinc-900 md:ml-3 hover:bg-zinc-800 text-white flex items-center p-2 rounded-lg space-x-2 max-w-lg"
                   onClick={togglePopup}
