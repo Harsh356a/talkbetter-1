@@ -101,13 +101,15 @@ const TemplateSelection = ({ open }) => {
     }
 
     try {
-      const response = await axios.post(
-        "https://configstaging.trainright.fit/api/configs/createAssistant",
+      const responseConfig = await axios.post(
+        "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         {
-          name: name,
-          instructions: "Hello i am blank assistant",
-          configId: "667bcdb873871446c339a734",
-          twilioNumber: "+18288880659",
+          fillers: ["Great"],
+          voiceId:
+            "s3://voice-cloning-zero-shot/d9ff78ba-d016-47f6-b0ef-dd630f59414e/female-cs/manifest.json",
+          firstFiller: "Hello there Alex this side from Blue Lotus.",
+          audioSpeed: "0.9",
+          informationNeeded: "",
         },
         {
           headers: {
@@ -115,8 +117,26 @@ const TemplateSelection = ({ open }) => {
           },
         }
       );
-      console.log("Assistant created successfully:", response.data);
-      navigate(`/configurationdummyy/${response.data.data._id}`);
+      console.log(responseConfig && responseConfig.data.data._id);
+      if (responseConfig && responseConfig.data.data._id) {
+        const response = await axios.post(
+          "https://configstaging.trainright.fit/api/configs/createAssistant",
+          {
+            name: name,
+            instructions: "Hello I am blank assistant",
+            configId: responseConfig.data.data._id,
+            twilioNumber: "+18288880659",
+          },
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        console.log("Assistant created successfully:", response.data);
+        navigate(`/configurationdummyy/${response.data.data._id}`);
+      }
     } catch (error) {
       console.error("Error creating assistant:", error);
     }

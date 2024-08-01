@@ -57,7 +57,8 @@ const AssistantsList = () => {
 
   return (
     <div className="p-8 min-h-screen bg-gray-800 text-gray-100">
-      <h1 className="text-3xl font-bold mb-8 text-center">Assistants</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center text-white">Assistants</h1>
+      h
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {assistants.map((assistant) => (
           <div

@@ -9,6 +9,7 @@ import SpeakerHign from "../images/SpeakerHigh.png";
 import WebhooksLogo from "../images/WebhooksLogo.png";
 import TalkBetter from "../images/TalkBetter.png";
 import Assistant from "./Assistant";
+import axios from "axios";
 import Phone from "./Phone";
 import Documents from "./Documents";
 import Voice from "./Voice";
@@ -25,13 +26,17 @@ import Squads from "./Squads";
 import Provider from "./ProviderApi";
 import Members from "../pages/Members";
 import Settings from "../pages/Settings";
+import Billing from "./Billing";
 const Sidebar = ({ openfun }) => {
   const [response, setResponse] = useState("");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const [id, setId] = useState("");
+  const [assistants, setAssistants] = useState();
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [selectedPlans, setSelectedPlans] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const popupRef = useRef(null);
@@ -43,20 +48,43 @@ const Sidebar = ({ openfun }) => {
       setEmail(userDetails.email);
       setResponse(userDetails.name);
       setUserName(userDetails.name.slice(0, 1).toUpperCase());
+      setId(userDetails._id);
     }
   });
 
+  useEffect(() => {
+    if (id) {
+      const fetchUserDetails = async () => {
+        try {
+          const response = await axios.get(
+            `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
+          );
+          const userSelectedPlan = response?.data?.result?.selectedPlan;
+
+          setSelectedPlans(userSelectedPlan);
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      };
+
+      fetchUserDetails();
+    }
+  }, [id]);
 
   const handleClickOutside = (event) => {
-    if (popupRef.current && !popupRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+    if (
+      popupRef.current &&
+      !popupRef.current.contains(event.target) &&
+      !buttonRef.current.contains(event.target)
+    ) {
       setIsPopupVisible(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -102,6 +130,52 @@ const Sidebar = ({ openfun }) => {
     hideSidebarPaths.includes(location.pathname) ||
     hideSidebarRegex.test(location.pathname);
 
+  useEffect(() => {
+    const fetchAssistants = async () => {
+      const token = localStorage.getItem("Token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "https://configstaging.trainright.fit/api/configs/findAllAssistants",
+          {
+            headers: {
+              Authorization: ` ${token}`,
+            },
+          }
+        );
+        setAssistants(response.data.data);
+        // console.log(response.data.data)
+      } catch (error) {
+        console.error("Error fetching assistants", error);
+      }
+    };
+
+    fetchAssistants();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(
+          `https://configstaging.trainright.fit/api/users/getUserDetails/${id}`
+        );
+        const userSelectedPlan = response?.data?.result?.selectedPlan;
+
+        setSelectedPlans(userSelectedPlan);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [id]);
+
+  console.log(selectedPlans);
+
   return (
     <div className="h-screen flex">
       {!shouldHideSidebar && (
@@ -111,30 +185,43 @@ const Sidebar = ({ openfun }) => {
           } fixed left-0 flex flex-col rounded w-full cursor-pointer`}
         >
           <div className="w-full py-3 lg:pl-10 flex justify-between items-center pl-2 flex-col sm:flex-row gap-5">
-            <img src={TalkBetter} className="h-6 w-32" alt="TalkBetter" />
+            <img src={TalkBetter} className="h-10 w-64" alt="TalkBetter" />
             <div className="flex gap-5 items-center pr-5 relative">
               <button
-                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs"
+                className="rounded-md p-3 bg-[#5D5FEF] text-white text-xs w-full"
                 onClick={() => navigate("/createassistant")}
               >
                 Create Assistant
               </button>
-              <button className="rounded-md text-xs p-3 bg-[#000000] text-white">
+              <button className="rounded-md text-xs p-3 bg-[#000000] text-white w-full">
                 + Add AI for help
               </button>
               <div className="  gap-5  flex">
                 <button
                   className={`${
-                    response ? "rounded-full text-xs" : "rounded-md text-xs"
-                  } px-5 p-3 bg-[#5D5FEF] text-white`}
+                    response ? "rounded-full text-xs" : "rounded-full text-xs"
+                  } relative px-4 p-3 bg-[#5D5FEF] text-white`}
                   onClick={toggleDropdown}
                 >
                   {userName ? (
-                    userName
+                    <>
+                      {userName}
+                      {selectedPlans?._id && (
+                        <span className="relative group">
+                          <span className="absolute bottom-3 transform translate-x-1/2 -translate-y-1/2">
+                            👑
+                          </span>
+                          <span className="absolute bottom-full right-0 mb-2 hidden w-max text-xs text-white bg-black p-1 rounded group-hover:block">
+                            Premium Member
+                          </span>
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <span onClick={() => navigate("/login")}>Login</span>
                   )}
                 </button>
+
                 {response && dropdownOpen && (
                   <button
                     className="block w-full px-4 py-2 text-sm bg-[#5D5FEF] text-white text-center rounded"
@@ -266,9 +353,8 @@ const Sidebar = ({ openfun }) => {
                   />
                   <h1>Provider APIs</h1>
                 </div> */}
-                
               </div>
-              
+
               <div
                 className={`flex gap-1  md:mt-3 md:ml-6 sm:gap-3 mx-9 items-center hover:bg-[#383E5A] p-1 sm:p-2 rounded ${
                   location.pathname === "/profile" ? "active-tab" : ""
@@ -304,7 +390,10 @@ const Sidebar = ({ openfun }) => {
                 </button>
 
                 {isPopupVisible && (
-                  <div ref={popupRef} className="absolute md:-top-80 w-60  backdrop-filter backdrop-blur-lg text-white p-4 rounded-lg shadow-md  dark:text-white">
+                  <div
+                    ref={popupRef}
+                    className="absolute md:-top-80 w-60  backdrop-filter backdrop-blur-lg text-white p-4 rounded-lg shadow-md  dark:text-white"
+                  >
                     <div className="flex items-center justify-between pb-3 border-b border-zinc-700 dark:border-zinc-700">
                       <span className="font-semibold">{email}'s Org</span>
                       <svg
@@ -324,16 +413,28 @@ const Sidebar = ({ openfun }) => {
                         Actions
                       </p>
                       <ul className="space-y-2">
-                        <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                        <li
+                          className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700"
+                          onClick={() => navigate("/billing")}
+                        >
                           <span>Billing</span>
                         </li>
-                        <li onClick={() => navigate("/members") } className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                        <li
+                          onClick={() => navigate("/members")}
+                          className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700"
+                        >
                           <span>Members</span>
                         </li>
-                        <li onClick={() => navigate("/settings") } className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                        <li
+                          onClick={() => navigate("/settings")}
+                          className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700"
+                        >
                           <span>Settings</span>
                         </li>
-                        <li onClick={() => navigate("/apikeys")} className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
+                        <li
+                          onClick={() => navigate("/apikeys")}
+                          className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700"
+                        >
                           <span>API Keys</span>
                         </li>
                         <li className="flex items-center hover:bg-zinc-700 p-2 rounded dark:hover:bg-zinc-700">
@@ -355,7 +456,7 @@ const Sidebar = ({ openfun }) => {
               <div className="flex fixed flex-col bg-black h-[84vh] w-[72px] justify-between items-center mx-2 rounded-3xl pt-8 py-5 lg:bottom-12 transition-all top-[5rem] lg:top-[4.8rem] xxs:top-[7rem] sm:top-[5rem]">
                 <div className="flex flex-col gap-4 items-center">
                   <div
-                  onClick={() => navigate("/overview")}
+                    onClick={() => navigate("/overview")}
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/overview" ? "active-tab" : ""
                     }`}
@@ -371,7 +472,7 @@ const Sidebar = ({ openfun }) => {
                     </svg>
                   </div>
                   <div
-                  onClick={() => navigate("/") }
+                    onClick={() => navigate("/")}
                     className={`flex gap-1 sm:gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/" ? "active-tab" : ""
                     }`}
@@ -379,7 +480,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={ApllePodCastLogo} alt="Assistants" />
                   </div>
                   <div
-                  onClick={() => navigate("/phone") }
+                    onClick={() => navigate("/phone")}
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/phone" ? "active-tab" : ""
                     }`}
@@ -387,7 +488,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={Phone1} alt="Phone Numbers" />
                   </div>
                   <div
-                  onClick={() => navigate('/documents') }
+                    onClick={() => navigate("/documents")}
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/documents" ? "active-tab" : ""
                     }`}
@@ -395,7 +496,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={File} alt="Documents" />
                   </div>
                   <div
-                  onClick={() => navigate('/squads') }
+                    onClick={() => navigate("/squads")}
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/squads" ? "active-tab" : ""
                     }`}
@@ -411,7 +512,7 @@ const Sidebar = ({ openfun }) => {
                     </svg>
                   </div>
                   <div
-                  onClick={() => navigate("/voice") }
+                    onClick={() => navigate("/voice")}
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/voice" ? "active-tab" : ""
                     }`}
@@ -419,7 +520,7 @@ const Sidebar = ({ openfun }) => {
                     <img src={SpeakerHign} alt="Voice Library" />
                   </div>
                   <div
-                  onClick={() => navigate("/call") }
+                    onClick={() => navigate("/call")}
                     className={`flex gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                       location.pathname === "/call" ? "active-tab" : ""
                     }`}
@@ -435,7 +536,7 @@ const Sidebar = ({ openfun }) => {
                   </div> */}
                 </div>
                 <div
-                onClick={() => navigate("/profile") }
+                  onClick={() => navigate("/profile")}
                   className={`flex md:mt-20 gap-3 items-center hover:bg-[#383E5A] p-2 rounded ${
                     location.pathname === "/profile" ? "active-tab" : ""
                   }`}
@@ -495,14 +596,15 @@ const Sidebar = ({ openfun }) => {
           <Provider open={open} />
         ) : location.pathname === "/squads" ? (
           <Squads open={open} />
+        ) : location.pathname === "/billing" ? (
+          <Billing open={open} id={id} selectedPlans={selectedPlans} />
         ) : location.pathname === "/members" ? (
           <Members open={open} />
         ) : location.pathname === "/settings" ? (
           <Settings email={email} open={open} />
         ) : location.pathname === "/apikeys" ? (
           <Provider open={open} />
-        ) :
-         (
+        ) : (
           ""
         )}
       </div>

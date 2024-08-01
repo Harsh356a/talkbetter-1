@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 const Confi = ({ open }) => {
   const [assistants, setAssistants] = useState([]);
+  const [activeAssistant, setActiveAssistant] = useState("");
+  const [selectedAssistantId, setSelectedAssistantId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,15 +27,48 @@ const Confi = ({ open }) => {
           }
         );
         setAssistants(response.data.data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching assistants", error);
-        setLoading(false);
       }
     };
 
     fetchAssistants();
   }, []);
+
+  const options =
+    assistants &&
+    assistants.map((voice) => ({
+      value: voice._id,
+      label: voice.name,
+    }));
+
+  const handleSelectChange = async (selectedOption) => {
+    setActiveAssistant(selectedOption.label);
+    setSelectedAssistantId(selectedOption.value);
+
+    try {
+      const token = localStorage.getItem("Token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      let a = await axios.put(
+        "https://configstaging.trainright.fit/api/configs/setDefaultAssistant",
+        {
+          assistantId: selectedOption.value,
+        },
+        {
+          headers: {
+            Authorization: ` ${token}`,
+          },
+        }
+      );
+      console.log("enables,", a);
+    } catch (error) {
+      console.error("Error setting default assistant", error);
+    }
+  };
 
   return (
     <div
@@ -43,17 +79,50 @@ const Confi = ({ open }) => {
       } absolute   flex-col gap-[24px] lg:top-[4.6rem] xl:top-[5rem] bg-black h-[85vh] rounded-3xl text-white flex justify-center items-center sm:top-[4.9rem] top-[6.9rem]  overflow-hidden`}
     >
       <div className="w-full px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2  gap-8 overflow-y-auto h-[70vh]">
+        <Select
+          options={options}
+          onChange={handleSelectChange}
+          className="w-full py-1 bg-[#1F1B29] rounded mb-1"
+          styles={{
+            control: (base) => ({
+              ...base,
+              backgroundColor: "#1F1B29",
+              border: "none",
+              boxShadow: "none",
+              "&:hover": {
+                border: "none",
+              },
+            }),
+            menu: (base) => ({
+              ...base,
+              backgroundColor: "#1F1B29",
+            }),
+            singleValue: (base) => ({
+              ...base,
+              color: "white",
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused ? "#3E2F5B" : "#1F1B29",
+              color: "white",
+            }),
+          }}
+        />
+        <p className="text-green-500 mb-5">
+          Active Assistant: {activeAssistant}
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 overflow-y-auto h-[70vh]">
           {assistants.map((assistant) => (
             <div
               key={assistant._id}
               className="bg-gray-700 rounded-lg p-6 shadow-md relative cursor-pointer hover:shadow-xl transition-shadow duration-300 h-52 overflow-hidden flex flex-col"
             >
-              {console.log(assistant)}
               <div className="flex-grow overflow-y-auto">
                 <h2
                   className="text-2xl font-semibold mb-4"
-                  onClick={() => navigate(`/configurationdummyy/${assistant._id}`)}
+                  onClick={() =>
+                    navigate(`/configurationdummyy/${assistant._id}`)
+                  }
                 >
                   {assistant.name}
                 </h2>
@@ -78,7 +147,6 @@ const Confi = ({ open }) => {
             </div>
           ))}
         </div>
-       
       </div>
     </div>
   );

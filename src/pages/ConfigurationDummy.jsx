@@ -18,7 +18,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [endCall, setEndCall] = useState(true);
-  const [selectedModel, setSelectedModel] = useState('Anthropic');
+  const [selectedModel, setSelectedModel] = useState("Anthropic");
 
   const recognitionRef = useRef(null);
   const socket = useRef(null);
@@ -28,29 +28,27 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const sourceNodeRef = useRef(null);
 
   useEffect(() => {
-    socket.current = io("https://voicebots.trainright.fit", {
+    socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: apikey, isVoiceNeeded: true },
     });
-
+  
     socket.current.on("connect", () => {
       setIsConnected(true);
     });
-
+  
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
-
-   
-
+  
     socket.current.on("audio-chunk", async (chunk) => {
       try {
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext ||
             window.webkitAudioContext)();
         }
-
+  
         const audioData = new Uint8Array(chunk).buffer;
-
+  
         audioContextRef.current
           .decodeAudioData(audioData)
           .then((audioBuffer) => {
@@ -66,7 +64,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         console.error("Error processing audio chunk:", error);
       }
     });
-
+  
     return () => {
       socket.current.disconnect();
       if (audioContextRef.current) {
@@ -74,17 +72,20 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       }
     };
   }, [apikey]);
-
+  
   const playAudioQueue = async () => {
     if (audioBufferQueue.current.length > 0) {
-      setIsLoading(false);
       isPlayingRef.current = true;
       const audioBuffer = audioBufferQueue.current.shift();
       const sourceNode = audioContextRef.current.createBufferSource();
       sourceNode.buffer = audioBuffer;
       sourceNode.connect(audioContextRef.current.destination);
       sourceNode.onended = () => {
-        playAudioQueue();
+        if (audioBufferQueue.current.length > 0) {
+          playAudioQueue();
+        } else {
+          isPlayingRef.current = false;
+        }
       };
       sourceNode.start();
       sourceNodeRef.current = sourceNode;
@@ -92,7 +93,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       isPlayingRef.current = false;
     }
   };
-
+  
   const stopPlaybackAndClearQueue = () => {
     if (sourceNodeRef.current) {
       sourceNodeRef.current.stop();
@@ -102,76 +103,81 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsLoading(false);
   };
 
-  const handleSpeech = () => {
-    if (!isCalling) {
-      setIsCalling(true);
-      setEndCall(true);
-    } else {
-      setIsCalling(false);
-      setEndCall(false);
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      stopPlaybackAndClearQueue();
-      return;
-    }
-
-    if (!("webkitSpeechRecognition" in window)) {
-      alert(
-        "Your browser does not support speech recognition. Please use Chrome."
-      );
-      return;
-    }
-
-    if (isListening) {
+const handleSpeech = () => {
+  if (!isCalling) {
+    setIsCalling(true);
+    setEndCall(true);
+  } else {
+    setIsCalling(false);
+    setEndCall(false);
+    if (recognitionRef.current) {
       recognitionRef.current.stop();
-      setIsListening(false);
-      stopPlaybackAndClearQueue();
-      return;
     }
+    stopPlaybackAndClearQueue();
+    return;
+  }
 
-    if (isPlayingRef.current) {
-      stopPlaybackAndClearQueue();
-    }
+  if (!("webkitSpeechRecognition" in window)) {
+    alert(
+      "Your browser does not support speech recognition. Please use Chrome."
+    );
+    return;
+  }
 
-    const recognition = new window.webkitSpeechRecognition();
-    recognitionRef.current = recognition;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+  if (isListening) {
+    recognitionRef.current.stop();
+    setIsListening(false);
+    stopPlaybackAndClearQueue();
+    return;
+  }
 
-    recognition.onstart = () => {
-      console.log("Speech recognition started");
-    };
+  if (isPlayingRef.current) {
+    stopPlaybackAndClearQueue();
+  }
 
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error", event);
-      alert(`Speech recognition error: ${event.error}`);
-      setIsListening(false);
-    };
+  const recognition = new window.webkitSpeechRecognition();
+  recognitionRef.current = recognition;
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
 
-    recognition.onend = () => {
-      console.log("Speech recognition ended");
-      if (isCalling) {
-        recognition.start(); // Restart recognition if the call is still active
-      } else {
-        setIsListening(false);
-        setIsLoading(true);
-      }
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map((result) => result[0].transcript)
-        .join(" ");
-      setText(transcript);
-      console.log("Speech recognition result:", transcript);
-      socket.current.emit("message", transcript);
-    };
-
-    recognition.start();
-    setIsListening(true);
+  recognition.onstart = () => {
+    console.log("Speech recognition started");
   };
+
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error", event);
+    alert(`Speech recognition error: ${event.error}`);
+    setIsListening(false);
+  };
+
+  recognition.onend = () => {
+    console.log("Speech recognition ended");
+    if (isCalling) {
+      recognition.start(); // Restart recognition if the call is still active
+    } else {
+      setIsListening(false);
+      setIsLoading(true);
+    }
+  };
+
+  recognition.onresult = (event) => {
+    let finalTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      }
+    }
+    setText(finalTranscript);
+    console.log("Speech recognition result:", finalTranscript);
+    if (finalTranscript) {
+      socket.current.emit("message", finalTranscript);
+    }
+  };
+
+  recognition.start();
+  setIsListening(true);
+};
 
   const handleMute = () => {
     setIsMuted(!isMuted);
@@ -201,7 +207,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [audioSpeed, setAudioSpeed] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
+const [dataPrompt,setDataPrompt]= useState("")
   const chatRef = useRef();
   const handleButtonClick = (contentId) => {
     setActiveContent(contentId);
@@ -271,6 +277,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       console.log("Assistant updated successfully:", response.data);
 
       // Second API call
+      console.log({ fillers, firstFillers, audioSpeed, voiceID, configid });
       const response1 = await axios.post(
         "https://configstaging.trainright.fit/api/configs/createAndEditConfig",
         {
@@ -280,6 +287,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
           voiceId: voiceID,
           id: configid,
           aiModel: selectedModel,
+          informationNeeded:dataPrompt
         },
         {
           headers: {
@@ -294,6 +302,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       setFillers(response1.data.fillers);
       setVoiceID(response1.data.voiceId);
       setAudioSpeed(response1.data.audioSpeed);
+      setDataPrompt(response1.data.informationNeeded)
       alert("Updated");
       window.location.reload();
     } catch (error) {
@@ -304,11 +313,14 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsVisible(!isVisible);
   };
   function getconfigdata(data) {
-    let a = data.filter((e) => e._id === configid);
+    console.log([data])
+    let a = [data][0].filter((e) => e._id === configid);
     if (a.length > 0) {
       // console.log(a[0])
       setFirstFillers(a[0].firstFiller);
       setFillers(a[0].fillers);
+      setDataPrompt(a[0].informationNeeded);
+      // setConfigIdd(a[0]._id)
       setVoiceID(a[0].voiceId);
       setAudioSpeed(a[0].audioSpeed.$numberDecimal);
       // setApiKey(a[0].audioSpeed.$numberDecimal);
@@ -335,6 +347,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         );
         const data = response.data;
         setApiKey(data.data.apiKey);
+        console.log("configID",data.data.configId)
         localStorage.setItem("APIKEY", data.data.apiKey);
         setName(data.data.name);
         setId(data.data.assistantId);
@@ -804,7 +817,11 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                   <label className="block text-sm font-medium mb-1">
                     Model
                   </label>
-                  <select value={selectedModel} onChange={handleChange} className="w-full p-2 bg-[#1F1B29] rounded text-white">
+                  <select
+                    value={selectedModel}
+                    onChange={handleChange}
+                    className="w-full p-2 bg-[#1F1B29] rounded text-white"
+                  >
                     <option>Anthropic</option>
                     <option>GPT 3.5</option>
                     <option>GPT 4.0</option>
@@ -847,6 +864,17 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
                     type="checkbox"
                     className="w-5 h-5 text-green-500 bg-zinc-800 rounded border-zinc-600"
                   />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                  Data Prompt
+                  </label>
+                  <textarea
+                    className="p-3 h-32 w-full bg-zinc-900 rounded resize-none text-white"
+                    onChange={(e) => setDataPrompt(e.target.value)}
+                    value={dataPrompt}
+                  />
+                
                 </div>
               </div>
             </div>
