@@ -105,6 +105,8 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
 
 const handleSpeech = () => {
   if (!isCalling) {
+    socket.current.emit('firstFiller', "run first filler");
+
     setIsCalling(true);
     setEndCall(true);
   } else {

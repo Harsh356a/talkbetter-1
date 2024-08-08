@@ -7,7 +7,7 @@ const Chatbot = ({ data }) => {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
- 
+
   useEffect(() => {
     const newSocket = socketIOClient("https://voicestaging.trainright.fit", {
       transports: ["websocket"],
@@ -25,7 +25,7 @@ const Chatbot = ({ data }) => {
     });
     newSocket.on('getToken', async (token) => {
       console.log(token);
-    })
+    });
     // Cleanup on unmount
     return () => {
       newSocket.disconnect();
@@ -49,6 +49,12 @@ const Chatbot = ({ data }) => {
         { type: "sent", text: message },
       ]);
       setMessage("");
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSubmit(event);
     }
   };
 
@@ -95,6 +101,7 @@ const Chatbot = ({ data }) => {
           type="text"
           value={message}
           onChange={(event) => setMessage(event.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type a message..."
           className="flex-grow bg-zinc-800 text-white px-4 py-2 rounded"
         />
