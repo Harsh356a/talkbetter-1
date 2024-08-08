@@ -780,16 +780,16 @@ const [dataPrompt,setDataPrompt]= useState("")
                     onChange={(e) => setFirstFillers(e.target.value)}
                   />
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 ">
                   <label className="block text-sm font-medium mb-1">
                     Fillers
                   </label>
                   <ReactTagInput
-                    tags={fillers}
-                    placeholder="Add fillers"
-                    onChange={handleTagChange}
-                    sty
-                  />
+                  tags={fillers}
+                  placeholder="Add fillers"
+                  onChange={handleTagChange}
+                
+                />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
