@@ -4,7 +4,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { useNavigate, useParams } from "react-router-dom";
 import Chatbot from "./Chatbot";
-import { FaRegCopy } from "react-icons/fa";
+import { FaRegCopy, FaRedo } from "react-icons/fa";
 import Select from "react-select";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
@@ -19,6 +19,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [endCall, setEndCall] = useState(true);
   const [selectedModel, setSelectedModel] = useState("Anthropic");
+  const [apiKey11, setApiKey11] = useState(""); // State to hold API key
 
   const recognitionRef = useRef(null);
   const socket = useRef(null);
@@ -31,24 +32,24 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     socket.current = io("https://voicestaging.trainright.fit", {
       query: { apiKey: apikey, isVoiceNeeded: true },
     });
-  
+
     socket.current.on("connect", () => {
       setIsConnected(true);
     });
-  
+
     socket.current.on("disconnect", () => {
       setIsConnected(false);
     });
-  
+
     socket.current.on("audio-chunk", async (chunk) => {
       try {
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext ||
             window.webkitAudioContext)();
         }
-  
+
         const audioData = new Uint8Array(chunk).buffer;
-  
+
         audioContextRef.current
           .decodeAudioData(audioData)
           .then((audioBuffer) => {
@@ -64,7 +65,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
         console.error("Error processing audio chunk:", error);
       }
     });
-  
+
     return () => {
       socket.current.disconnect();
       if (audioContextRef.current) {
@@ -72,7 +73,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       }
     };
   }, [apikey]);
-  
+
   const playAudioQueue = async () => {
     if (audioBufferQueue.current.length > 0) {
       isPlayingRef.current = true;
@@ -93,7 +94,7 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
       isPlayingRef.current = false;
     }
   };
-  
+
   const stopPlaybackAndClearQueue = () => {
     if (sourceNodeRef.current) {
       sourceNodeRef.current.stop();
@@ -103,83 +104,83 @@ const ConfigurationDummy = ({ open, isdummyfunc }) => {
     setIsLoading(false);
   };
 
-const handleSpeech = () => {
-  if (!isCalling) {
-    socket.current.emit('firstFiller', "run first filler");
+  const handleSpeech = () => {
+    if (!isCalling) {
+      socket.current.emit("firstFiller", "run first filler");
 
-    setIsCalling(true);
-    setEndCall(true);
-  } else {
-    setIsCalling(false);
-    setEndCall(false);
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    stopPlaybackAndClearQueue();
-    return;
-  }
-
-  if (!("webkitSpeechRecognition" in window)) {
-    alert(
-      "Your browser does not support speech recognition. Please use Chrome."
-    );
-    return;
-  }
-
-  if (isListening) {
-    recognitionRef.current.stop();
-    setIsListening(false);
-    stopPlaybackAndClearQueue();
-    return;
-  }
-
-  if (isPlayingRef.current) {
-    stopPlaybackAndClearQueue();
-  }
-
-  const recognition = new window.webkitSpeechRecognition();
-  recognitionRef.current = recognition;
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = "en-US";
-
-  recognition.onstart = () => {
-    console.log("Speech recognition started");
-  };
-
-  recognition.onerror = (event) => {
-    console.error("Speech recognition error", event);
-    alert(`Speech recognition error: ${event.error}`);
-    setIsListening(false);
-  };
-
-  recognition.onend = () => {
-    console.log("Speech recognition ended");
-    if (isCalling) {
-      recognition.start(); // Restart recognition if the call is still active
+      setIsCalling(true);
+      setEndCall(true);
     } else {
-      setIsListening(false);
-      setIsLoading(true);
-    }
-  };
-
-  recognition.onresult = (event) => {
-    let finalTranscript = '';
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        finalTranscript += event.results[i][0].transcript;
+      setIsCalling(false);
+      setEndCall(false);
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
       }
+      stopPlaybackAndClearQueue();
+      return;
     }
-    setText(finalTranscript);
-    console.log("Speech recognition result:", finalTranscript);
-    if (finalTranscript) {
-      socket.current.emit("message", finalTranscript);
-    }
-  };
 
-  recognition.start();
-  setIsListening(true);
-};
+    if (!("webkitSpeechRecognition" in window)) {
+      alert(
+        "Your browser does not support speech recognition. Please use Chrome."
+      );
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      stopPlaybackAndClearQueue();
+      return;
+    }
+
+    if (isPlayingRef.current) {
+      stopPlaybackAndClearQueue();
+    }
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+      console.log("Speech recognition started");
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event);
+      alert(`Speech recognition error: ${event.error}`);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      console.log("Speech recognition ended");
+      if (isCalling) {
+        recognition.start(); // Restart recognition if the call is still active
+      } else {
+        setIsListening(false);
+        setIsLoading(true);
+      }
+    };
+
+    recognition.onresult = (event) => {
+      let finalTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      setText(finalTranscript);
+      console.log("Speech recognition result:", finalTranscript);
+      if (finalTranscript) {
+        socket.current.emit("message", finalTranscript);
+      }
+    };
+
+    recognition.start();
+    setIsListening(true);
+  };
 
   const handleMute = () => {
     setIsMuted(!isMuted);
@@ -209,7 +210,7 @@ const handleSpeech = () => {
   const [audioSpeed, setAudioSpeed] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-const [dataPrompt,setDataPrompt]= useState("")
+  const [dataPrompt, setDataPrompt] = useState("");
   const chatRef = useRef();
   const handleButtonClick = (contentId) => {
     setActiveContent(contentId);
@@ -289,7 +290,7 @@ const [dataPrompt,setDataPrompt]= useState("")
           voiceId: voiceID,
           id: configid,
           aiModel: selectedModel,
-          informationNeeded:dataPrompt
+          informationNeeded: dataPrompt,
         },
         {
           headers: {
@@ -304,7 +305,7 @@ const [dataPrompt,setDataPrompt]= useState("")
       setFillers(response1.data.fillers);
       setVoiceID(response1.data.voiceId);
       setAudioSpeed(response1.data.audioSpeed);
-      setDataPrompt(response1.data.informationNeeded)
+      setDataPrompt(response1.data.informationNeeded);
       alert("Updated");
       window.location.reload();
     } catch (error) {
@@ -315,7 +316,7 @@ const [dataPrompt,setDataPrompt]= useState("")
     setIsVisible(!isVisible);
   };
   function getconfigdata(data) {
-    console.log([data])
+    console.log([data]);
     let a = [data][0].filter((e) => e._id === configid);
     if (a.length > 0) {
       // console.log(a[0])
@@ -331,6 +332,35 @@ const [dataPrompt,setDataPrompt]= useState("")
       console.error("Config not found for configId:", configid);
     }
   }
+  const getApiKey = async () => {
+    console.log("he");
+    const token = localStorage.getItem("Token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+    console.log(token, { id });
+    try {
+      const response = await axios.post(
+        "https://configstaging.trainright.fit/api/configs/regenerateApiKey",
+        { id },
+        {
+          headers: {
+            Authorization: ` ${token}`,
+          },
+        }
+      );
+      setApiKey11(response.data.apiKey); // Set the API key in the state
+    } catch (error) {
+      console.error("Error regenerating API key", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getApiKey(); // Fetch API key when an assistant is selected
+    }
+  }, [id]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -349,10 +379,10 @@ const [dataPrompt,setDataPrompt]= useState("")
         );
         const data = response.data;
         setApiKey(data.data.apiKey);
-        console.log("configID",data.data.configId)
+        console.log("configID", data.data.configId);
         localStorage.setItem("APIKEY", data.data.apiKey);
         setName(data.data.name);
-        setId(data.data.assistantId);
+        setId(data.data._id);
         setConfigId(data.data.configId);
         setSystemPrompt(data.data.instructions);
       } catch (error) {
@@ -411,13 +441,19 @@ const [dataPrompt,setDataPrompt]= useState("")
             <h1 className="text-2xl">{name}</h1>
             <div className="flex flex- items-center space-x-2">
               <div className="bg-[#25263F] text-sm px-5 py-3 rounded-full flex  items-center space-x-1">
-                <span>{id}</span>
+                <p className="text-white font-mono text-xs">{apiKey11}</p>
                 <FaRegCopy
                   onClick={handleCopy}
                   className={`cursor-pointer ${
                     isCopied ? "text-green-500" : "text-white"
                   }`}
                 />
+                <button
+                  onClick={getApiKey}
+                  className="flex items-center  rounded font-semibold"
+                >
+                  <FaRedo className="mr-2" /> 
+                </button>
               </div>
               <div className="flex flex- items-center space-x-4">
                 <div>
@@ -785,11 +821,10 @@ const [dataPrompt,setDataPrompt]= useState("")
                     Fillers
                   </label>
                   <ReactTagInput
-                  tags={fillers}
-                  placeholder="Add fillers"
-                  onChange={handleTagChange}
-                
-                />
+                    tags={fillers}
+                    placeholder="Add fillers"
+                    onChange={handleTagChange}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -869,14 +904,13 @@ const [dataPrompt,setDataPrompt]= useState("")
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">
-                  Data Prompt
+                    Data Prompt
                   </label>
                   <textarea
                     className="p-3 h-32 w-full bg-zinc-900 rounded resize-none text-white"
                     onChange={(e) => setDataPrompt(e.target.value)}
                     value={dataPrompt}
                   />
-                
                 </div>
               </div>
             </div>
