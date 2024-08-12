@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import app from "../firebase/config.firebase";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -16,7 +17,7 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userPlan, setUserPlan] = useState(null);
   const [postLoginCallback, setPostLoginCallback] = useState(null);
-
+const navigate =useNavigate()
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
 
@@ -30,31 +31,55 @@ const AuthProvider = ({ children }) => {
       const token = await currentUser.getIdToken();
       localStorage.setItem("Token", token);
 
-      // Store user info in your Mongoose database
+      // Prepare user data for signup
       const userData = {
-        email: user.email,
-        password: user.uid,
+        email: currentUser.email,
+        password: "Password@123",
         projectId: "664ece853e17537b70918cde",
-        name: user.email,
+        name: currentUser.email,
         role: "user",
         status: true,
       };
-      console.log(userData);
-      const response = await axios.post(
-        "https://configstaging.trainright.fit/api/users/signUp",
-        userData
-      );
-      console.log("sign", response);
-      if(response){
+
+      try {
+        console.log("sign", userData);
+        // Store user info in your Mongoose database (signup)
+        await axios.post(
+          "https://configstaging.trainright.fit/api/users/signUp",
+          userData
+        );
+        localStorage.setItem("UserDetails", JSON.stringify(userData));
+        console.log("Signup successful");
+      } catch (error) {
+        console.error("Error during signup:", error);
+      }
+
+      try {
+        console.log("login", {
+          email: currentUser.email,
+          password: "Password@123",
+          projectId: "664ece853e17537b70918cde",
+        });
+        // Log in the user after signup
+        const loginResponse = await axios.post(
+          "https://configstaging.trainright.fit/api/users/login",
+          {
+            email: currentUser.email,
+            password: "Password@123",
+            projectId: "664ece853e17537b70918cde",
+          }
+        );
+        console.log("Login successful", loginResponse.data);
         localStorage.setItem(
           "UserDetails",
-          JSON.stringify(userData)
+          JSON.stringify(loginResponse.data.profile)
         );
+        localStorage.setItem("Token", loginResponse.data.authToken);
+        navigate("/")
 
+      } catch (error) {
+        console.error("Error during login:", error);
       }
-      // Store user profile in localStorage
-
-      console.log("Login successful", response.data);
 
       // Set user and execute post-login callback
       setUser(currentUser);

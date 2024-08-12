@@ -47,7 +47,6 @@ function App() {
         "md:h-[100vh]   md:w-full w-[28rem] "
       } ${location.pathname === "/createassistant" && "h-[]"}`}
     >
-      <BrowserRouter>
         <Sidebar openfun={openfun} />
         <Routes>
           {/* <Route path="/phone" element={<Phone />} /> */}
@@ -74,7 +73,7 @@ function App() {
           <Route path="/demo" element={<Demo />} />
           <Route path="/chatbots" element={<Chatbot />}></Route>
         </Routes>
-      </BrowserRouter>
+     
       {/* <button
         className="fixed flex justify-center items-center gap-2 bottom-10 text-center right-10 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg"
         onClick={() => setIsChatbotOpen(true)}
