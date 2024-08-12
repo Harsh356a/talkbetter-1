@@ -158,6 +158,7 @@ const Sidebar = ({ openfun }) => {
   }, []);
 
   useEffect(() => {
+    console.log(id,"iddd")
     const fetchUserDetails = async () => {
       try {
         const response = await axios.get(

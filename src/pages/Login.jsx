@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthContext } from "../provider/AuthProvider";
 
 const Login = () => {
+  const { googleSignIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+      navigate("/");
+    } catch (error) {
+      console.error("Error during Google sign-in:", error);
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -17,7 +28,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+    console.log({
+      email,
+      password,
+      projectId: "664ece853e17537b70918cde",
+    });
     try {
       const response = await axios.post(
         "https://configstaging.trainright.fit/api/users/login",
@@ -41,35 +56,11 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLoginSuccess = async (response) => {
-    try {
-      const { credential } = response;
-      const googleResponse = await axios.post(
-        "https://configstaging.trainright.fit/api/users/google-login",
-        {
-          token: credential,
-          projectId: "664ece853e17537b70918cde",
-        }
-      );
-      console.log("Google login successful", googleResponse.data);
-      // Store user profile and token in localStorage
-      localStorage.setItem(
-        "UserDetails",
-        JSON.stringify(googleResponse.data.profile)
-      );
-      localStorage.setItem("Token", googleResponse.data.authToken);
-      navigate("/");
-    } catch (err) {
-      console.error("Google login error", err);
-      setError("Google login failed. Please try again.");
-    }
-  };
-
   return (
     <GoogleOAuthProvider clientId="126939604567-fb0s64i0qssep1g10g9qma9e4sek8iqv.apps.googleusercontent.com">
       <div className="bg-black text-white min-h-screen flex items-center justify-center w-full absolute px-4 md:px-0">
-        <div className="absolute top-20 ">
-          <h1 className="text-2xl md:text-3xl font-semibold text-center ">
+        <div className="absolute top-20">
+          <h1 className="text-2xl md:text-3xl font-semibold text-center">
             <span className="text-white">Talk</span>
             <span className="text-blue-500">Better</span>
           </h1>
@@ -140,47 +131,37 @@ const Login = () => {
                     fill="white"
                     viewBox="0 0 256 256"
                   >
-                    <path d="M53.92,34.62A8,8,0,1,0,42.08,45.38L61.32,66.55C25,88.84,9.38,123.2,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208a127.11,127.11,0,0,0,52.07-10.83l22,24.21a8,8,0,1,0,11.84-10.76Zm47.33,75.84,41.67,45.85a32,32,0,0,1-41.67-45.85ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.16,133.16,0,0,1,25,128c4.69-8.79,19.66-33.39,47.35-49.38l18,19.75a48,48,0,0,0,63.66,70l14.73,16.2A112,112,0,0,1,128,192Zm6-95.43a8,8,0,0,1,3-15.72,48.16,48.16,0,0,1,38.77,42.64,8,8,0,0,1-7.22,8.71,6.39,6.39,0,0,1-.75,0,8,8,0,0,1-8-7.26A32.09,32.09,0,0,0,134,96.57Zm113.28,34.69c-.42.94-10.55,23.37-33.36,43.8a8,8,0,1,1-10.67-11.92A132.77,132.77,0,0,0,231.05,128a133.15,133.15,0,0,0-23.12-30.77C185.67,75.19,158.78,64,128,64a118.37,118.37,0,0,0-19.36,1.57A8,8,0,1,1,106,49.79,134,134,0,0,1,128,48c34.88,0,66.57,13.26,91.66,38.35,18.83,18.83,27.3,37.62,27.65,38.41A8,8,0,0,1,247.31,131.26Z"></path>
+                    <path d="M53.92,34.62A8,8,0,1,0,42.08,45.38L61.32,66.55C25,88.84,9.38,123.2,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208a127.11,127.11,0,0,0,52.07-10.83l22,24.21a8,8,0,1,0,11.84-10.76Zm47.33,75.84,41.67,45.85a32,32,0,0,1-41.67-45.85ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.16,133.16,0,0,1,25,128c4.69-8.79,19.66-33.39,47.35-49.38l18,19.75a48,48,0,0,0,63.66,70l14.73,16.2A112,112,0,0,1,128,192Zm6-95.43a8,8,0,0,1,3-15.72,48.16,48.16,0,0,1,38.77,42.64,8,8,0,0,1-7.22,8.71,6.39,6.39,0,0,1-.75,0,8,8,0,0,1-8-7.26A32.09,32.09,0,0,0,134,96.57Zm113.28,34.16a142.67,142.67,0,0,0-21.37,31.12A145.79,145.79,0,0,0,213.57,128a134.88,134.88,0,0,0-27.93-29.36l16.49-22.13a8,8,0,1,0-13.65-8.87L189,81.63a8,8,0,0,0-1.12,11.56ZM165.17,164.75a8,8,0,0,1-11.36,0l-17.91-19.43a32,32,0,0,1-51.83-23.09l-17.83-20.63a96,96,0,0,0,95.87,63.48Z"></path>
                   </svg>
                 )}
               </button>
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button type="submit" className="w-full p-3 bg-[#5D5FEF] rounded-md">
-              Sign in
+
+            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md"
+            >
+              Sign In
             </button>
           </form>
 
-          <div className="flex items-center justify-center bg-zinc-800 p-2 py-3">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => {
-                console.error("Login Failed");
-                setError("Google login failed. Please try again.");
-              }}
-            />
-          </div>
+          <div className="text-center space-y-4 mt-4">
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full py-2 px-4 bg-blue-500 text-white rounded-md"
+            >
+              Sign in with Google
+            </button>
 
-          <div className="text-center text-sm text-zinc-400">
-            <p>
+            <p className="text-sm">
               Don't have an account?{" "}
-              <Link to={"/register"} className="text-[#6062F8] text-lg">
+              <Link to="/signup" className="text-blue-400">
                 Sign up
               </Link>
             </p>
           </div>
-
-          <p className="text-xs text-center text-zinc-600">
-            By using TalkBetter you agree to our{" "}
-            <a href="#" className="text-[#6062F8]">
-              Terms and Conditions
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-[#6062F8]">
-              Security
-            </a>{" "}
-            policies and practices.
-          </p>
         </div>
       </div>
     </GoogleOAuthProvider>
